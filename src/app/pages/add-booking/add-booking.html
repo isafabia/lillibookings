@@ -1,1 +1,113 @@
-<p>add-booking works!</p>
+<div class="page">
+<!-- top bar -->
+<div class="topbar">
+<a class="back" routerLink="/">
+<mat-icon>chevron_left</mat-icon>
+</a>
+
+<div class="topbar-title">
+<div class="small">create</div>
+<div class="big">new booking</div>
+</div>
+
+<div class="spacer"></div>
+</div>
+
+<!-- form card -->
+<mat-card class="soft-card">
+<form class="form" (ngSubmit)="save()">
+<!-- section: booking details -->
+<div class="section-title">booking details</div>
+
+<mat-form-field appearance="outline" class="field">
+<mat-label>group / school name</mat-label>
+<input matInput formControlName="groupName" placeholder="e.g. st. anne’s school" />
+<mat-error *ngIf="form.controls.groupName.touched && form.controls.groupName.invalid">
+please enter a group name
+</mat-error>
+</mat-form-field>
+
+<div class="two-col">
+<mat-form-field appearance="outline" class="field">
+<mat-label>date</mat-label>
+<input matInput [matDatepicker]="picker" formControlName="date" />
+<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+<mat-datepicker #picker></mat-datepicker>
+<mat-error *ngIf="form.controls.date.touched && form.controls.date.invalid">
+choose a date
+</mat-error>
+</mat-form-field>
+
+<mat-form-field appearance="outline" class="field">
+<mat-label>activity</mat-label>
+<mat-select formControlName="activity">
+<mat-option *ngFor="let a of activities" [value]="a">{{ a }}</mat-option>
+</mat-select>
+<mat-error *ngIf="form.controls.activity.touched && form.controls.activity.invalid">
+choose an activity
+</mat-error>
+</mat-form-field>
+</div>
+
+<div class="two-col">
+<mat-form-field appearance="outline" class="field">
+<mat-label>start time</mat-label>
+<input matInput type="time" formControlName="startTime" />
+<mat-error *ngIf="form.controls.startTime.touched && form.controls.startTime.invalid">
+required
+</mat-error>
+</mat-form-field>
+
+<mat-form-field appearance="outline" class="field">
+<mat-label>end time</mat-label>
+<input matInput type="time" formControlName="endTime" />
+<mat-error *ngIf="form.controls.endTime.touched && form.controls.endTime.invalid">
+required
+</mat-error>
+</mat-form-field>
+</div>
+
+<!-- section: group info -->
+<div class="section-title">group info</div>
+
+<div class="two-col">
+<mat-form-field appearance="outline" class="field">
+<mat-label>kids</mat-label>
+<input matInput type="number" min="0" formControlName="kidsCount" />
+<mat-error *ngIf="form.controls.kidsCount.touched && form.controls.kidsCount.invalid">
+enter a valid number
+</mat-error>
+</mat-form-field>
+
+<mat-form-field appearance="outline" class="field">
+<mat-label>teachers</mat-label>
+<input matInput type="number" min="0" formControlName="teachersCount" />
+<mat-error *ngIf="form.controls.teachersCount.touched && form.controls.teachersCount.invalid">
+enter a valid number
+</mat-error>
+</mat-form-field>
+</div>
+
+<!-- section: safety -->
+<div class="section-title">safety notes</div>
+
+<mat-form-field appearance="outline" class="field">
+<mat-label>medical conditions / notes (optional)</mat-label>
+<textarea matInput rows="4" formControlName="medicalNotes"
+placeholder="e.g. asthma, allergies, medication, injuries..."></textarea>
+</mat-form-field>
+
+<!-- actions -->
+<div class="actions">
+<button type="button" mat-stroked-button class="pill secondary" routerLink="/">
+cancel
+</button>
+
+<button type="submit" mat-raised-button class="pill primary">
+<mat-icon>check</mat-icon>
+save booking
+</button>
+</div>
+</form>
+</mat-card>
+</div>

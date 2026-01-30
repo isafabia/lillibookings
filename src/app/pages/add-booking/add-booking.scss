@@ -1,0 +1,99 @@
+.page {
+padding: 16px;
+background: #faf6f2; // soft cream background
+min-height: 100vh;
+}
+
+.topbar {
+background: #f47c20; // brand orange
+border-radius: 18px;
+padding: 14px;
+color: #fff;
+display: flex;
+align-items: center;
+gap: 10px;
+margin-bottom: 14px;
+}
+
+.back {
+width: 42px;
+height: 42px;
+border-radius: 16px;
+background: rgba(255, 255, 255, 0.20);
+display: grid;
+place-items: center;
+text-decoration: none;
+color: #fff;
+}
+
+.topbar-title .small {
+font-size: 12px;
+opacity: 0.9;
+text-transform: lowercase;
+}
+
+.topbar-title .big {
+font-size: 18px;
+font-weight: 800;
+text-transform: lowercase;
+}
+
+.spacer {
+flex: 1;
+}
+
+.soft-card {
+border-radius: 18px;
+box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+padding: 6px;
+}
+
+.form {
+padding: 10px;
+}
+
+.section-title {
+margin: 14px 2px 8px;
+font-weight: 800;
+text-transform: lowercase;
+color: #3b2b22;
+}
+
+.field {
+width: 100%;
+}
+
+.two-col {
+display: grid;
+grid-template-columns: 1fr;
+gap: 12px;
+}
+
+@media (min-width: 720px) {
+.two-col {
+grid-template-columns: 1fr 1fr;
+}
+}
+
+.actions {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+margin-top: 16px;
+}
+
+.pill {
+height: 46px;
+border-radius: 16px !important;
+font-weight: 800;
+text-transform: lowercase;
+}
+
+.primary {
+background: #f47c20 !important;
+color: #fff !important;
+}
+
+.secondary {
+border-color: rgba(0,0,0,0.14) !important;
+}
