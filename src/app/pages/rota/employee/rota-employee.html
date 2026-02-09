@@ -1,0 +1,87 @@
+<div class="page">
+  <div class="topbar">
+    <a class="back" routerLink="/rota/admin">
+      <mat-icon>chevron_left</mat-icon>
+    </a>
+
+    <div class="topbar-title">
+        <div class="toggle">
+  <button
+    type="button"
+    class="toggle-btn"
+    [class.active]="view === 'today'"
+    (click)="setView('today')"
+  >
+    today
+  </button>
+
+  <button
+    type="button"
+    class="toggle-btn"
+    [class.active]="view === 'tomorrow'"
+    (click)="setView('tomorrow')"
+  >
+    tomorrow
+  </button>
+</div>
+      <div class="small">employee</div>
+      <div class="big">my rota</div>
+    </div>
+
+    <div class="spacer"></div>
+  </div>
+
+  <div class="list" *ngIf="shifts$ | async as shifts">
+
+    <mat-card class="soft-card shift-card" *ngFor="let s of shifts">
+      <div class="left">
+        <div class="icon-chip">
+          <mat-icon>schedule</mat-icon>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="title">
+          {{ s.startTime }} – {{ s.endTime }} • {{ s.activity }}
+        </div>
+
+        <div class="sub" *ngIf="s.groupName">
+          {{ s.groupName }}
+        </div>
+
+        <ng-container *ngIf="s.bookingId as bid">
+  <ng-container *ngIf="getBooking(bid) as bk">
+    <div class="sub">
+      booking: {{ bk.groupName }} • {{ bk.kidsCount }} kids • {{ bk.teachersCount }} teachers
+    </div>
+
+    <div class="notes" *ngIf="bk.medicalNotes?.trim()?.length">
+      <mat-icon class="warn">warning</mat-icon>
+      {{ bk.medicalNotes }}
+    </div>
+  </ng-container>
+</ng-container>
+
+
+        <div class="status-pill" [ngClass]="s.status">
+          {{ s.status }}
+        </div>
+      </div>
+
+      <div class="right" *ngIf="s.status === 'pending'">
+        <button mat-stroked-button type="button" (click)="decline(s)">
+          decline
+        </button>
+
+        <button mat-raised-button type="button" class="accept" (click)="accept(s)">
+          accept
+        </button>
+      </div>
+    </mat-card>
+
+    <div class="empty" *ngIf="shifts.length === 0">
+      no shifts yet ✨
+    </div>
+
+  </div>
+</div>

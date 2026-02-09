@@ -1,0 +1,81 @@
+<div class="page" *ngIf="booking; else notFound">
+
+  <div class="topbar">
+    <a class="back" routerLink="/">
+      <mat-icon>chevron_left</mat-icon>
+    </a>
+
+    <div class="topbar-title">
+      <div class="small">booking</div>
+      <div class="big">details</div>
+    </div>
+
+    <div class="spacer"></div>
+  </div>
+
+  <mat-card class="soft-card">
+    <div class="title">{{ booking.groupName }}</div>
+
+    <div class="row">
+      <mat-icon>event</mat-icon>
+      <span>{{ booking.date | date:'fullDate' }}</span>
+    </div>
+
+    <div class="row">
+      <mat-icon>schedule</mat-icon>
+      <span>{{ booking.startTime }} – {{ booking.endTime }}</span>
+    </div>
+
+    <div class="row">
+      <mat-icon>directions_boat</mat-icon>
+      <span>{{ booking.activity }}</span>
+    </div>
+
+    <div class="row">
+      <mat-icon>groups</mat-icon>
+      <span>{{ booking.kidsCount }} kids • {{ booking.teachersCount }} teachers</span>
+    </div>
+
+    <div class="row">
+      <mat-icon>verified</mat-icon>
+      <span class="status-pill">{{ booking.status }}</span>
+    </div>
+
+    <div class="notes" *ngIf="booking.medicalNotes?.trim()?.length">
+      <div class="notes-title">
+        <mat-icon>warning</mat-icon>
+        medical notes
+      </div>
+      <div class="notes-body">
+        {{ booking.medicalNotes }}
+      </div>
+    </div>
+
+    <div class="notes muted" *ngIf="!booking.medicalNotes?.trim()?.length">
+      no medical notes added.
+    </div>
+
+    <!-- actions -->
+    <div class="actions">
+      <button mat-stroked-button type="button" (click)="edit()">
+        <mat-icon>edit</mat-icon>
+        edit
+      </button>
+
+      <button mat-raised-button color="warn" type="button" (click)="delete()">
+        <mat-icon>delete</mat-icon>
+        delete
+      </button>
+    </div>
+
+  </mat-card>
+
+</div>
+
+<ng-template #notFound>
+  <div class="page">
+    <mat-card class="soft-card">
+      booking not found.
+    </mat-card>
+  </div>
+</ng-template>

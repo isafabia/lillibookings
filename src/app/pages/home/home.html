@@ -1,129 +1,147 @@
 <div class="page">
 
-<!-- top header -->
-<header class="top">
-<div class="brand">
-<div class="logo-pill">
-<span class="logo-dot"></span>
-</div>
-<div class="brand-text">
-<div class="brand-name">lillibookings</div>
-<div class="brand-sub">adventure centre</div>
-</div>
-</div>
+  <!-- top header -->
+  <header class="top">
+    <div class="brand">
+      <div class="logo-pill">
+        <span class="logo-dot"></span>
+      </div>
+      <div class="brand-text">
+        <div class="brand-name">lillibookings</div>
+        <div class="brand-sub">adventure centre</div>
+      </div>
+    </div>
 
-<div class="top-actions">
-<button mat-icon-button aria-label="notifications">
-<mat-icon>notifications</mat-icon>
-</button>
-<button mat-icon-button aria-label="profile">
-<mat-icon>account_circle</mat-icon>
-</button>
-</div>
-</header>
+    <div class="top-actions">
+      <button mat-icon-button>
+        <mat-icon>notifications</mat-icon>
+      </button>
+      <button mat-icon-button>
+        <mat-icon>account_circle</mat-icon>
+      </button>
+    </div>
+  </header>
 
-<!-- welcome -->
-<div class="welcome">
-<h1>welcome, admin 👋</h1>
-</div>
+  <!-- welcome -->
+  <div class="welcome">
+    <h1>welcome, admin 👋</h1>
+  </div>
 
-<!-- calendar card -->
-<mat-card class="soft-card calendar-card">
-<div class="calendar-row">
-<button mat-icon-button>
-<mat-icon>chevron_left</mat-icon>
-</button>
+  <!-- calendar -->
+  <mat-card class="soft-card calendar-card">
+    <div class="calendar-row">
 
-<div class="calendar-center">
-<div class="calendar-title">april 2026</div>
-<div class="calendar-days">
-<span>sun</span><span>mon</span><span>tue</span><span>wed</span><span>thu</span><span>fri</span><span>sat</span>
-</div>
-<div class="calendar-dates">
-<span>21</span><span>22</span><span>23</span><span class="active">24</span><span>25</span><span>26</span><span>27</span>
-</div>
-</div>
+      <button mat-icon-button type="button" (click)="prevWeek()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
 
-<button mat-icon-button>
-<mat-icon>chevron_right</mat-icon>
-</button>
-</div>
-</mat-card>
+      <div class="calendar-center">
+        <div class="calendar-title">{{ monthLabel }}</div>
 
-<!-- primary buttons -->
-<div class="primary-actions">
-<button mat-raised-button class="pill primary" routerLink="/add-booking">
-<mat-icon>add</mat-icon>
-add booking
-</button>
+        <div class="calendar-days">
+          <span *ngFor="let d of weekDays">
+            {{ dayName(d) }}
+          </span>
+        </div>
 
-<button mat-stroked-button class="pill secondary">
-<mat-icon>event</mat-icon>
-manage rota
-</button>
-</div>
+        <div class="calendar-dates">
+          <span
+            *ngFor="let d of weekDays"
+            (click)="selectDay(d)"
+            [ngClass]="{ active: isSelected(d) }"
+          >
+            {{ dayNumber(d) }}
+          </span>
+        </div>
+      </div>
 
-<!-- bookings list -->
-<div class="section-row">
-<div class="section-title">today</div>
-<a class="link" href="#">view all</a>
-</div>
+      <button mat-icon-button type="button" (click)="nextWeek()">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
 
-<div class="list">
-<mat-card class="soft-card booking-card">
-<div class="booking-left">
-<div class="icon-chip">
-<mat-icon>calendar_month</mat-icon>
-</div>
-</div>
-<div class="booking-main">
-<div class="booking-title">st. anne’s school</div>
-<div class="booking-sub">11:00 – 15:00 • summer camp</div>
-</div>
-<div class="booking-right">
-<span class="status">confirmed</span>
-<mat-icon class="chev">chevron_right</mat-icon>
-</div>
-</mat-card>
+    </div>
+  </mat-card>
 
-<mat-card class="soft-card booking-card">
-<div class="booking-left">
-<div class="icon-chip">
-<mat-icon>calendar_month</mat-icon>
-</div>
-</div>
-<div class="booking-main">
-<div class="booking-title">mount mercy school</div>
-<div class="booking-sub">09:00 – 13:00 • kayaking</div>
-</div>
-<div class="booking-right">
-<span class="status pending">pending</span>
-<mat-icon class="chev">chevron_right</mat-icon>
-</div>
-</mat-card>
-</div>
+  <!-- primary actions -->
+  <div class="primary-actions">
+    <button mat-raised-button class="pill primary" routerLink="/add-booking">
+      <mat-icon>add</mat-icon>
+      add booking
+    </button>
 
-<!-- bottom nav -->
-<nav class="bottom-nav">
-<button class="nav-item active">
-<mat-icon>home</mat-icon>
-<span>home</span>
-</button>
+    <button mat-stroked-button class="pill secondary">
+      <mat-icon>groups</mat-icon>
+      manage rota
+    </button>
+  </div>
 
-<button class="nav-item">
-<mat-icon>calendar_today</mat-icon>
-<span>bookings</span>
-</button>
+  <!-- bookings list -->
+  <div class="list" *ngIf="filteredBookings$ | async as bookings">
 
-<button class="nav-item">
-<mat-icon>groups</mat-icon>
-<span>rota</span>
-</button>
+    <ng-container *ngFor="let b of bookings">
+      <mat-card class="soft-card booking-card" [routerLink]="['/booking', b.id]">
 
-<button class="nav-item">
-<mat-icon>person</mat-icon>
-<span>profile</span>
-</button>
+        <div class="booking-left">
+          <div class="icon-chip">
+            <mat-icon>calendar_month</mat-icon>
+          </div>
+        </div>
+
+        <div class="booking-main">
+          <div class="booking-title">{{ b.groupName }}</div>
+
+          <div class="booking-sub">
+            {{ b.startTime }} – {{ b.endTime }} • {{ b.activity }}
+          </div>
+
+          <div class="booking-meta">
+            {{ b.kidsCount }} kids • {{ b.teachersCount }} teachers
+          </div>
+
+          <div class="notes-badge" *ngIf="b.medicalNotes?.trim()?.length">
+            <mat-icon class="notes-icon">warning</mat-icon>
+            notes
+          </div>
+        </div>
+
+        <div class="booking-right">
+          <span class="status" [class.pending]="b.status === 'pending'">
+            {{ b.status }}
+          </span>
+          <mat-icon class="chev">chevron_right</mat-icon>
+        </div>
+
+      </mat-card>
+    </ng-container>
+
+    <!-- empty state -->
+    <div class="empty" *ngIf="bookings.length === 0">
+      no bookings for this day yet ✨
+    </div>
+
+  </div>
+
+  <!-- bottom nav -->
+ <nav class="bottom-nav">
+  <a class="nav-item" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+    <mat-icon>home</mat-icon>
+    <span>home</span>
+  </a>
+
+  <a class="nav-item" routerLink="/bookings" routerLinkActive="active">
+    <mat-icon>calendar_today</mat-icon>
+    <span>bookings</span>
+  </a>
+
+  <a class="nav-item" routerLink="/rota" routerLinkActive="active">
+    <mat-icon>groups</mat-icon>
+    <span>rota</span>
+  </a>
+
+  <a class="nav-item" routerLink="/profile" routerLinkActive="active">
+    <mat-icon>person</mat-icon>
+    <span>profile</span>
+  </a>
 </nav>
 
 </div>

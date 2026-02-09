@@ -1,0 +1,106 @@
+<div class="page">
+
+  <!-- top header like admin -->
+  <header class="top">
+    <div class="brand">
+      <div class="logo-pill">
+        <span class="logo-dot"></span>
+      </div>
+      <div class="brand-text">
+        <div class="brand-name">lillibookings</div>
+        <div class="brand-sub">employee</div>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <button mat-icon-button aria-label="notifications">
+        <mat-icon>notifications</mat-icon>
+      </button>
+      <button mat-icon-button aria-label="profile" routerLink="/profile">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+    </div>
+  </header>
+
+  <!-- welcome -->
+  <div class="welcome">
+    <h1>hey staff 👋</h1>
+    <div class="hint">quick view of {{ dayLabel }}’s shifts</div>
+  </div>
+
+  <!-- toggle -->
+  <div class="toggle">
+    <button type="button" class="toggle-btn" [class.active]="view === 'today'" (click)="setView('today')">
+      today
+    </button>
+    <button type="button" class="toggle-btn" [class.active]="view === 'tomorrow'" (click)="setView('tomorrow')">
+      tomorrow
+    </button>
+  </div>
+
+  <!-- preview shifts -->
+  <div class="list" *ngIf="preview$ | async as shifts">
+
+    <div class="empty" *ngIf="shifts.length === 0">
+      no shifts {{ dayLabel }} ✨
+    </div>
+
+    <mat-card class="soft-card shift-card" *ngFor="let s of shifts">
+      <div class="left">
+        <div class="icon-chip">
+          <mat-icon>schedule</mat-icon>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="title">
+          {{ s.startTime }} – {{ s.endTime }}
+          <span *ngIf="s.activity"> • {{ s.activity }}</span>
+        </div>
+
+        <div class="sub" *ngIf="s.groupName">
+          {{ s.groupName }}
+        </div>
+
+        <div class="status-pill" [ngClass]="s.status">
+          {{ s.status }}
+        </div>
+      </div>
+
+      <div class="right">
+        <a class="open" routerLink="/rota/employee">open</a>
+      </div>
+    </mat-card>
+
+    <div class="more">
+      <a class="pill-link" routerLink="/rota/employee">
+        view full rota
+      </a>
+    </div>
+
+  </div>
+
+  <!-- bottom nav -->
+  <nav class="bottom-nav">
+    <a class="nav-item active" routerLink="/employee" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <mat-icon>home</mat-icon>
+      <span>home</span>
+    </a>
+
+    <a class="nav-item" routerLink="/bookings" routerLinkActive="active">
+      <mat-icon>calendar_today</mat-icon>
+      <span>bookings</span>
+    </a>
+
+    <a class="nav-item" routerLink="/rota/employee" routerLinkActive="active">
+      <mat-icon>groups</mat-icon>
+      <span>rota</span>
+    </a>
+
+    <a class="nav-item" routerLink="/profile" routerLinkActive="active">
+      <mat-icon>person</mat-icon>
+      <span>profile</span>
+    </a>
+  </nav>
+
+</div>

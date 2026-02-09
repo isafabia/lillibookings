@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { BookingService } from '../../services/booking.service';
+import { Booking } from '../../models/booking.model';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,57 +14,73 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
-selector: 'app-add-booking',
-standalone: true,
-imports: [
-ReactiveFormsModule,
-RouterLink,
-MatCardModule,
-MatButtonModule,
-MatFormFieldModule,
-MatInputModule,
-MatSelectModule,
-MatIconModule,
-MatDatepickerModule,
-MatNativeDateModule,
-],
-templateUrl: './add-booking.html',
-styleUrl: './add-booking.scss',
+  selector: 'app-add-booking',
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    MatCardModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatIconModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+  ],
+  templateUrl: './add-booking.html',
+  styleUrl: './add-booking.scss',
 })
 export class AddBookingComponent {
-// simple activity list for now (you can change later)
-activities = [
-'kayaking',
-'stand up paddle boarding',
-'forest activities',
-'rock wall climbing',
-];
+  activities = [
+    'kayaking',
+    'stand up paddle boarding',
+    'forest activities',
+    'rock wall climbing',
+  ];
 
+  form: any; 
 
-form: any;
-constructor(private fb: FormBuilder) {
-this.form = this.fb.group({
-groupName: ['', [Validators.required, Validators.minLength(2)]],
-date: [null as Date | null, [Validators.required]],
-startTime: ['', [Validators.required]],
-endTime: ['', [Validators.required]],
-activity: ['', [Validators.required]],
-kidsCount: [null as number | null, [Validators.required, Validators.min(0)]],
-teachersCount: [null as number | null, [Validators.required, Validators.min(0)]],
-medicalNotes: [''],
-});
+ constructor(
+  private fb: FormBuilder,
+  private bookingService: BookingService,
+  private router: Router
+) {
+  this.form = this.fb.group({
+    groupName: ['', [Validators.required, Validators.minLength(2)]],
+    date: [null as Date | null, [Validators.required]],
+    startTime: ['', [Validators.required]],
+    endTime: ['', [Validators.required]],
+    activity: ['default', [Validators.required]],
+    kidsCount: [null as number | null, [Validators.required, Validators.min(0)]],
+    teachersCount: [null as number | null, [Validators.required, Validators.min(0)]],
+    medicalNotes: [''],
+  });
 }
+  save(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
+    const v = this.form.value;
 
+    const booking: Booking = {
+      id: crypto.randomUUID(),
+      groupName: String(v.groupName ?? '').trim(),
+      date: (v.date as Date).toISOString(),
+      startTime: String(v.startTime ?? ''),
+      endTime: String(v.endTime ?? ''),
+      activity: String(v.activity ?? ''),
+      kidsCount: Number(v.kidsCount ?? 0),
+      teachersCount: Number(v.teachersCount ?? 0),
+      medicalNotes: String(v.medicalNotes ?? ''),
+      status: 'confirmed',
+    };
 
-// later this will call the API
-save(): void {
-if (this.form.invalid) {
-this.form.markAllAsTouched();
-return;
-}
+    this.bookingService.addBooking(booking);
 
-console.log('booking payload:', this.form.value);
-alert('booking saved (demo) ✅');
-}
+    // go back to home
+    this.router.navigate(['']);
+  }
 }

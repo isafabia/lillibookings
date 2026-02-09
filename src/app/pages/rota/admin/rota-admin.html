@@ -1,0 +1,111 @@
+<div class="page">
+  <div class="topbar">
+    <div class="topbar-title">
+      <div class="small">admin</div>
+      <div class="big">rota builder</div>
+    </div>
+
+    <div class="spacer"></div>
+
+    <a class="pill-link" routerLink="/rota/employee">
+      preview employee
+    </a>
+  </div>
+
+  <mat-card class="soft-card">
+    <div class="section-title">create shift</div>
+
+    <form class="form" [formGroup]="form">
+
+      <div class="two-col">
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>date</mat-label>
+          <input matInput type="date" formControlName="date" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>employee</mat-label>
+          <mat-select formControlName="employeeId">
+            <mat-option *ngFor="let e of employees" [value]="e.id">
+              {{ e.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="two-col">
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>start</mat-label>
+          <input matInput type="time" formControlName="startTime" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>end</mat-label>
+          <input matInput type="time" formControlName="endTime" />
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>shift type</mat-label>
+        <mat-select formControlName="type">
+          <mat-option value="activity">activity shift</mat-option>
+          <mat-option value="group">group shift</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- activity dropdown -->
+      <mat-form-field appearance="outline" class="field" *ngIf="form?.value?.type === 'activity'">
+        <mat-label>activity</mat-label>
+        <mat-select formControlName="activity">
+          <mat-option *ngFor="let a of activities" [value]="a">
+            {{ a }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- group name -->
+      <mat-form-field appearance="outline" class="field" *ngIf="form?.value?.type === 'group'">
+        <mat-label>group name</mat-label>
+        <input matInput formControlName="groupName" placeholder="e.g. st. anne’s school" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>link booking (optional)</mat-label>
+        <mat-select formControlName="bookingId">
+          <mat-option value="">none</mat-option>
+          <mat-option *ngFor="let b of bookings" [value]="b.id">
+            {{ b.groupName }} ({{ b.startTime }}–{{ b.endTime }})
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-raised-button type="button" class="primary" (click)="saveShift()">
+        <mat-icon>add</mat-icon>
+        add shift
+      </button>
+    </form>
+  </mat-card>
+
+  <!-- ✅ THIS MAKES IT FEEL LIKE IT WORKS -->
+  <mat-card class="soft-card" style="margin-top: 14px;">
+    <div class="section-title">recent shifts</div>
+
+    <div class="list" *ngIf="shifts$ | async as shifts">
+      <div class="empty" *ngIf="shifts.length === 0">no shifts yet ✨</div>
+
+      <mat-card class="soft-card" style="padding: 12px;" *ngFor="let s of shifts">
+        <div style="font-weight:800; text-transform:lowercase; color:#3b2b22;">
+          {{ s.startTime }} – {{ s.endTime }}
+        </div>
+        <div style="opacity:.75; text-transform:lowercase;">
+          {{ s.employeeName }} • {{ s.type }}
+          <span *ngIf="s.type === 'activity'">• {{ s.activity }}</span>
+          <span *ngIf="s.type === 'group'">• {{ s.groupName }}</span>
+        </div>
+        <div style="margin-top:6px;">
+          <span class="status-pill" [ngClass]="s.status">{{ s.status }}</span>
+        </div>
+      </mat-card>
+    </div>
+  </mat-card>
+</div>
