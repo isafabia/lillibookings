@@ -36,12 +36,6 @@ import { NgIf, NgFor } from '@angular/common';
   styleUrl: './add-booking.scss',
 })
 export class AddBookingComponent {
-  activities = [
-    'kayaking',
-    'stand up paddle boarding',
-    'forest activities',
-    'rock wall climbing',
-  ];
 
   form: any;
 
@@ -56,7 +50,6 @@ export class AddBookingComponent {
       date: [null as Date | null, [Validators.required]],
       startTime: ['', [Validators.required]],
       endTime: ['', [Validators.required]],
-      activity: ['kayaking', [Validators.required]],
       kidsCount: [null as number | null, [Validators.required, Validators.min(0)]],
       teachersCount: [null as number | null, [Validators.required, Validators.min(0)]],
       medicalNotes: [''],
@@ -77,7 +70,6 @@ export class AddBookingComponent {
   date: (v.date as Date).toISOString(),
   startTime: String(v.startTime ?? ''),
   endTime: String(v.endTime ?? ''),
-  activity: String(v.activity ?? ''),
   kidsCount: Number(v.kidsCount ?? 0),
   teachersCount: Number(v.teachersCount ?? 0),
   medicalNotes: String(v.medicalNotes ?? ''),

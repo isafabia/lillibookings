@@ -11,7 +11,6 @@ export class BookingService {
       date: new Date().toISOString(),
       startTime: '11:00',
       endTime: '15:00',
-      activity: 'kayaking',
       kidsCount: 25,
       teachersCount: 3,
       medicalNotes: '',

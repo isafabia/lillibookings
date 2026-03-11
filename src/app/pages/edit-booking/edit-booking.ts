@@ -11,6 +11,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
 import { BookingService } from '../../services/booking.service';
+import { BookingApiService } from '../../services/booking-api.service';
 import { Booking } from '../../models/booking.model';
 
 @Component({
@@ -38,9 +39,9 @@ export class EditBookingComponent {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private bookingService: BookingService
+    private bookingService: BookingService,
+    private bookingApi: BookingApiService
   ) {
-    // build the form AFTER fb exists
     this.form = this.fb.group({
       groupName: ['', [Validators.required, Validators.minLength(2)]],
       date: [null as Date | null, [Validators.required]],
@@ -82,7 +83,7 @@ export class EditBookingComponent {
     if (!existing) return;
 
     const updated: Booking = {
-      ...existing, // keeps id, status, activity, etc
+      ...existing,
       groupName: String(v.groupName ?? '').trim(),
       date: (v.date as Date).toISOString(),
       startTime: String(v.startTime ?? ''),
@@ -92,7 +93,17 @@ export class EditBookingComponent {
       medicalNotes: String(v.medicalNotes ?? ''),
     };
 
-    this.bookingService.updateBooking(updated);
-    this.router.navigate(['/booking', this.bookingId]);
+    this.bookingApi.updateBooking(this.bookingId, updated).subscribe({
+      next: () => {
+        // optional for immediate local UI update
+        this.bookingService.updateBooking(updated);
+
+        this.router.navigate(['/booking', this.bookingId]);
+      },
+      error: (err: unknown) => {
+        console.error('error updating booking', err);
+        alert('there was a problem updating the booking');
+      }
+    });
   }
 }

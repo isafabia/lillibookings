@@ -19,4 +19,12 @@ export class BookingApiService {
   getBookings(): Observable<Booking[]> {
     return this.http.get<Booking[]>(this.apiUrl);
   }
+
+  updateBooking(id: string, booking: Booking) {
+  return this.http.put(`${this.apiUrl}/${id}`, booking);
+}
+
+deleteBooking(id: string) {
+  return this.http.delete(`${this.apiUrl}/${id}`);
+}
 }

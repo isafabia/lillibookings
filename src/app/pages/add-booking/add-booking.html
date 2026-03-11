@@ -38,15 +38,7 @@
           </mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="field">
-          <mat-label>activity</mat-label>
-          <mat-select formControlName="activity">
-            <mat-option *ngFor="let a of activities" [value]="a">{{ a }}</mat-option>
-          </mat-select>
-          <mat-error *ngIf="form.controls.activity.touched && form.controls.activity.invalid">
-            choose an activity
-          </mat-error>
-        </mat-form-field>
+       
       </div>
 
       <div class="two-col">

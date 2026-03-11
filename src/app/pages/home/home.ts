@@ -8,6 +8,7 @@ import { AsyncPipe, NgFor, NgIf, NgClass } from '@angular/common';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Booking } from '../../models/booking.model';
+import { BookingApiService } from '../../services/booking-api.service';
 
 @Component({
   selector: 'app-home',
@@ -25,7 +26,9 @@ export class HomeComponent {
  bookings$!: Observable<Booking[]>;
 filteredBookings$!: Observable<Booking[]>;
 
-  constructor(private bookingService: BookingService) {
+  constructor(private bookingService: BookingService, 
+    private bookingApi: BookingApiService
+  ) {
     this.selectedDate = this.stripTime(new Date());
     this.weekDays = this.getWeekDays(this.selectedDate);
 

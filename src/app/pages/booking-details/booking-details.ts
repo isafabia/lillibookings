@@ -1,15 +1,13 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { NgIf } from '@angular/common';
+import { NgIf, DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
 import { BookingService } from '../../services/booking.service';
+import { BookingApiService } from '../../services/booking-api.service';
 import { Booking } from '../../models/booking.model';
-
-import {DatePipe} from '@angular/common';
-
 
 @Component({
   selector: 'app-booking-details',
@@ -24,13 +22,15 @@ export class BookingDetailsComponent {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private bookingService: BookingService
+    private bookingService: BookingService,
+    private bookingApi: BookingApiService
   ) {
     const id = this.route.snapshot.paramMap.get('id') ?? '';
     this.booking = this.bookingService.getById(id);
 
-    // if someone types a bad url, go home
-    if (!this.booking) this.router.navigateByUrl('/');
+    if (!this.booking) {
+      this.router.navigateByUrl('/');
+    }
   }
 
   edit(): void {
@@ -44,7 +44,15 @@ export class BookingDetailsComponent {
     const ok = confirm(`delete booking for "${this.booking.groupName}"?`);
     if (!ok) return;
 
-    this.bookingService.deleteBooking(this.booking.id);
-    this.router.navigateByUrl('/');
+    this.bookingApi.deleteBooking(this.booking.id).subscribe({
+      next: () => {
+        this.bookingService.deleteBooking(this.booking!.id);
+        this.router.navigateByUrl('/');
+      },
+      error: (err: unknown) => {
+        console.error('error deleting booking', err);
+        alert('there was a problem deleting the booking');
+      }
+    });
   }
 }

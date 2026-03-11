@@ -4,7 +4,6 @@ export interface Booking {
   date: string; // ISO string
   startTime: string;
   endTime: string;
-  activity: string;
   kidsCount: number;
   teachersCount: number;
   medicalNotes?: string;
