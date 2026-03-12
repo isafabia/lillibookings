@@ -3,7 +3,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { BookingService } from '../../services/booking.service';
 import { AsyncPipe, NgFor, NgIf, NgClass } from '@angular/common';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
@@ -13,55 +12,55 @@ import { BookingApiService } from '../../services/booking-api.service';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [MatCardModule, MatButtonModule, MatIconModule, RouterLink,RouterLinkActive, NgFor, NgIf, NgClass, AsyncPipe],
+  imports: [
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    RouterLink,
+    RouterLinkActive,
+    NgFor,
+    NgIf,
+    NgClass,
+    AsyncPipe
+  ],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
 export class HomeComponent {
-  // calendar state
   selectedDate: Date;
   weekDays: Date[];
 
-  // data
- bookings$!: Observable<Booking[]>;
-filteredBookings$!: Observable<Booking[]>;
+  bookings$!: Observable<Booking[]>;
+  filteredBookings$!: Observable<Booking[]>;
 
-  constructor(private bookingService: BookingService, 
-    private bookingApi: BookingApiService
-  ) {
+  constructor(private bookingApi: BookingApiService) {
     this.selectedDate = this.stripTime(new Date());
     this.weekDays = this.getWeekDays(this.selectedDate);
 
-    this.bookings$ = this.bookingService.bookings$;
+    // load bookings from backend
+    this.bookings$ = this.bookingApi.getBookings();
 
-    // filter bookings by selected day
+    // filter bookings for selected day
     this.filteredBookings$ = this.bookings$.pipe(
       map((items: Booking[]) =>
-        items.filter(b =>
-          this.stripTime(new Date(b.date)).getTime() === this.selectedDate.getTime()
-        )
+        items.filter(b => this.isSameLocalDate(b.date, this.selectedDate))
       )
     );
   }
 
-  // month title (e.g. "january 2026")
   get monthLabel(): string {
     return this.selectedDate
       .toLocaleString('en-IE', { month: 'long', year: 'numeric' })
       .toLowerCase();
   }
 
-  // click a day
   selectDay(d: Date): void {
     this.selectedDate = this.stripTime(d);
     this.weekDays = this.getWeekDays(this.selectedDate);
 
-    // re-create filtered stream so UI updates immediately
     this.filteredBookings$ = this.bookings$.pipe(
-      map((items: any[]) =>
-        items.filter(b =>
-          this.stripTime(new Date(b.date)).getTime() === this.selectedDate.getTime()
-        )
+      map((items: Booking[]) =>
+        items.filter(b => this.isSameLocalDate(b.date, this.selectedDate))
       )
     );
   }
@@ -90,13 +89,23 @@ filteredBookings$!: Observable<Booking[]>;
     return d.getDate();
   }
 
+  private isSameLocalDate(dateString: string, selected: Date): boolean {
+    const d = new Date(dateString);
+
+    return (
+      d.getFullYear() === selected.getFullYear() &&
+      d.getMonth() === selected.getMonth() &&
+      d.getDate() === selected.getDate()
+    );
+  }
+
   private stripTime(d: Date): Date {
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());
   }
 
   private getWeekDays(base: Date): Date[] {
     const d = this.stripTime(base);
-    const day = d.getDay(); // 0 sun .. 6 sat
+    const day = d.getDay();
     const start = new Date(d);
     start.setDate(d.getDate() - day);
 
