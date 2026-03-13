@@ -1,29 +1,30 @@
 <div class="page">
   <div class="topbar">
-    <a class="back" routerLink="/rota/admin">
+    <a class="back" routerLink="/rota">
       <mat-icon>chevron_left</mat-icon>
     </a>
 
     <div class="topbar-title">
-        <div class="toggle">
-  <button
-    type="button"
-    class="toggle-btn"
-    [class.active]="view === 'today'"
-    (click)="setView('today')"
-  >
-    today
-  </button>
+      <div class="toggle">
+        <button
+          type="button"
+          class="toggle-btn"
+          [class.active]="view === 'today'"
+          (click)="setView('today')"
+        >
+          today
+        </button>
 
-  <button
-    type="button"
-    class="toggle-btn"
-    [class.active]="view === 'tomorrow'"
-    (click)="setView('tomorrow')"
-  >
-    tomorrow
-  </button>
-</div>
+        <button
+          type="button"
+          class="toggle-btn"
+          [class.active]="view === 'tomorrow'"
+          (click)="setView('tomorrow')"
+        >
+          tomorrow
+        </button>
+      </div>
+
       <div class="small">employee</div>
       <div class="big">my rota</div>
     </div>
@@ -42,26 +43,13 @@
 
       <div class="main">
         <div class="title">
-          {{ s.startTime }} – {{ s.endTime }} • {{ s.activity }}
+          {{ s.startTime }} – {{ s.endTime }}
+          <span *ngIf="s.activityName"> • {{ s.activityName }}</span>
         </div>
 
         <div class="sub" *ngIf="s.groupName">
           {{ s.groupName }}
         </div>
-
-        <ng-container *ngIf="s.bookingId as bid">
-  <ng-container *ngIf="getBooking(bid) as bk">
-    <div class="sub">
-      booking: {{ bk.groupName }} • {{ bk.kidsCount }} kids • {{ bk.teachersCount }} teachers
-    </div>
-
-    <div class="notes" *ngIf="bk.medicalNotes?.trim()?.length">
-      <mat-icon class="warn">warning</mat-icon>
-      {{ bk.medicalNotes }}
-    </div>
-  </ng-container>
-</ng-container>
-
 
         <div class="status-pill" [ngClass]="s.status">
           {{ s.status }}

@@ -89,25 +89,17 @@ export class RotaAdminComponent {
     const v = this.form.value;
     const emp = this.employees.find(e => e.id === v.employeeId);
 
-    const shift: RotaShift = {
-      id: crypto.randomUUID(),
-      date: new Date(v.date).toISOString(),
-      startTime: String(v.startTime),
-      endTime: String(v.endTime),
-      type: v.type,
-
-      activity: v.type === 'activity' ? String(v.activity ?? '') : undefined,
-      groupName: v.type === 'group' ? String(v.groupName ?? '') : undefined,
-
-      employeeId: String(v.employeeId),
-      employeeName: emp?.name ?? 'employee',
-
-      bookingId: v.bookingId ? String(v.bookingId) : undefined,
-
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-    };
-
+   const shift: RotaShift = {
+  id: crypto.randomUUID(),
+  employeeName: String(v.employeeName ?? '').trim(),
+  date: new Date(v.date).toISOString(),
+  startTime: String(v.startTime ?? ''),
+  endTime: String(v.endTime ?? ''),
+  assignmentType: v.assignmentType,
+  groupName: String(v.groupName ?? '').trim() || undefined,
+  activityName: String(v.activityName ?? '').trim() || undefined,
+  status: 'pending',
+};
     this.rotaService.addShift(shift);
 
     // ✅ reset form (activity must be a string, not an array)

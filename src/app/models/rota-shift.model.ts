@@ -1,26 +1,25 @@
-export type ShiftStatus = 'pending' | 'accepted' | 'declined';
-export type ShiftType = 'activity' | 'group';
+export type ShiftAssignmentType =
+  | 'residential-group'
+  | 'activity-station'
+  | 'follow-day-group';
+
+export type ShiftStatus =
+  | 'pending'
+  | 'accepted'
+  | 'declined'
+  | 'worked';
 
 export interface RotaShift {
   id: string;
-  date: string; // ISO
+  employeeName: string;
+  date: string;
   startTime: string;
   endTime: string;
+  assignmentType: ShiftAssignmentType;
 
-  type: ShiftType;
-
-  activity?: string;   // for activity shift
-  groupName?: string;  // for group shift
-
-  employeeId: string;
-  employeeName: string;
-
-  // connection to booking (part 2)
   bookingId?: string;
+  groupName?: string;
+  activityName?: string;
 
   status: ShiftStatus;
-
-  // timestamps (part 3)
-  createdAt: string;          // ISO
-  respondedAt?: string;       // ISO (when accepted/declined)
 }

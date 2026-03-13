@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AsyncPipe, NgClass, NgFor, NgIf, DatePipe } from '@angular/common';
+import { AsyncPipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 import { MatCardModule } from '@angular/material/card';
@@ -23,7 +23,6 @@ import { Booking } from '../../../models/booking.model';
     NgFor,
     NgClass,
     AsyncPipe,
-    DatePipe,
     RouterLink,
     MatCardModule,
     MatIconModule,
@@ -35,7 +34,6 @@ import { Booking } from '../../../models/booking.model';
 export class RotaEmployeeComponent {
   shifts$: Observable<RotaShift[]>;
 
-  // toggle state
   view: 'today' | 'tomorrow' = 'today';
 
   constructor(
@@ -50,24 +48,21 @@ export class RotaEmployeeComponent {
   setView(v: 'today' | 'tomorrow'): void {
     this.view = v;
 
-    // re-create stream so the UI updates immediately
     this.shifts$ = this.rotaService.shifts$.pipe(
       map((items: RotaShift[]) => items.filter(s => this.isInSelectedDay(s.date)))
     );
   }
 
   accept(s: RotaShift): void {
-    this.rotaService.updateStatus(s.id, 'accepted');
+    this.rotaService.updateShiftStatus(s.id, 'accepted');
   }
 
   decline(s: RotaShift): void {
-    this.rotaService.updateStatus(s.id, 'declined');
+    this.rotaService.updateShiftStatus(s.id, 'declined');
   }
 
   getBooking(id?: string): Booking | undefined {
     if (!id) return undefined;
-
-    // your booking service method is called getBookingById
     return this.bookingService.getById(id);
   }
 
@@ -75,7 +70,9 @@ export class RotaEmployeeComponent {
     const shiftDay = this.stripTime(new Date(isoDate));
 
     const base = new Date();
-    if (this.view === 'tomorrow') base.setDate(base.getDate() + 1);
+    if (this.view === 'tomorrow') {
+      base.setDate(base.getDate() + 1);
+    }
 
     const selectedDay = this.stripTime(base);
     return shiftDay.getTime() === selectedDay.getTime();

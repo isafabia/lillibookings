@@ -1,1 +1,94 @@
-<p>rota works!</p>
+<div class="page">
+  <mat-card class="soft-card">
+    <div class="section-title">create rota shift</div>
+
+    <form class="form">
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>employee name</mat-label>
+        <input matInput [formControl]="form.controls.employeeName" />
+      </mat-form-field>
+
+      <div class="two-col">
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>date</mat-label>
+          <input matInput type="date" [formControl]="form.controls.date" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>assignment type</mat-label>
+          <mat-select [formControl]="form.controls.assignmentType">
+            <mat-option *ngFor="let type of assignmentTypes" [value]="type">
+              {{ labelForType(type) }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="two-col">
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>start time</mat-label>
+          <input matInput type="time" [formControl]="form.controls.startTime" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>end time</mat-label>
+          <input matInput type="time" [formControl]="form.controls.endTime" />
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>group name (optional)</mat-label>
+        <input matInput [formControl]="form.controls.groupName" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>activity name (optional)</mat-label>
+        <input matInput [formControl]="form.controls.activityName" />
+      </mat-form-field>
+
+      <div class="actions-row">
+        <button mat-raised-button type="button" class="primary" (click)="addShift()">
+          <mat-icon>add</mat-icon>
+          add shift
+        </button>
+
+        <button mat-stroked-button type="button" routerLink="/rota/employee">
+          employee view
+        </button>
+
+        <button mat-stroked-button type="button" (click)="clearAllShifts()">
+          clear all
+        </button>
+      </div>
+    </form>
+  </mat-card>
+
+  <mat-card class="soft-card">
+    <div class="section-title">rota shifts</div>
+
+    <div *ngIf="(shifts$ | async) as shifts">
+      <div *ngIf="shifts.length === 0" class="empty-state">
+        no shifts added yet
+      </div>
+
+      <div class="shift-list">
+        <div class="shift-card" *ngFor="let shift of shifts">
+          <div class="shift-top">
+            <div>
+              <div class="shift-name">{{ shift.employeeName }}</div>
+              <div class="shift-type">{{ labelForType(shift.assignmentType) }}</div>
+            </div>
+            <div class="shift-status">{{ shift.status }}</div>
+          </div>
+
+          <div class="shift-info">
+            <div><strong>date:</strong> {{ shift.date | date:'fullDate' }}</div>
+            <div><strong>time:</strong> {{ shift.startTime }} - {{ shift.endTime }}</div>
+            <div *ngIf="shift.groupName"><strong>group:</strong> {{ shift.groupName }}</div>
+            <div *ngIf="shift.activityName"><strong>activity:</strong> {{ shift.activityName }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+</div>

@@ -15,6 +15,7 @@ import { RotaEmployeeComponent } from './pages/rota/employee/rota-employee';
 import { ProfileComponent } from './pages/profile/profile';
 import { EmployeeHomeComponent } from './pages/employee-home/employee-home';
 
+
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'add-booking', component: AddBookingComponent },

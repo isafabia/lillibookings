@@ -97,11 +97,11 @@
         <div style="font-weight:800; text-transform:lowercase; color:#3b2b22;">
           {{ s.startTime }} – {{ s.endTime }}
         </div>
-        <div style="opacity:.75; text-transform:lowercase;">
-          {{ s.employeeName }} • {{ s.type }}
-          <span *ngIf="s.type === 'activity'">• {{ s.activity }}</span>
-          <span *ngIf="s.type === 'group'">• {{ s.groupName }}</span>
-        </div>
+       <div style="opacity:.75; text-transform:lowercase;">
+  {{ s.employeeName }} • {{ s.assignmentType }}
+  <span *ngIf="s.activityName"> • {{ s.activityName }}</span>
+  <span *ngIf="s.groupName"> • {{ s.groupName }}</span>
+</div>
         <div style="margin-top:6px;">
           <span class="status-pill" [ngClass]="s.status">{{ s.status }}</span>
         </div>

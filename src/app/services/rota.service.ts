@@ -2,61 +2,58 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { RotaShift, ShiftStatus } from '../models/rota-shift.model';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class RotaService {
-  // make a "tomorrow" date for demo data
-  private readonly tomorrow = (() => {
-    const d = new Date();
-    d.setDate(d.getDate() + 1);
-    return d;
-  })();
+  private readonly storageKey = 'lilliput-rota-shifts';
 
-  private readonly _shifts = new BehaviorSubject<RotaShift[]>([
-    // TODAY shift
-    {
-      id: crypto.randomUUID(),
-      date: new Date().toISOString(),
-      startTime: '09:00',
-      endTime: '13:00',
-      type: 'activity',
-      activity: 'kayaking',
-      employeeId: 'emp1',
-      employeeName: 'isabella',
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-    },
-
-    // TOMORROW shift ✅
-    {
-      id: crypto.randomUUID(),
-      date: this.tomorrow.toISOString(),
-      startTime: '13:00',
-      endTime: '17:00',
-      type: 'group',
-      groupName: "st. anne’s school",
-      activity: 'rotating program',
-      employeeId: 'emp1',
-      employeeName: 'isabella',
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-    },
-  ]);
+  private readonly _shifts = new BehaviorSubject<RotaShift[]>(this.loadShifts());
 
   shifts$ = this._shifts.asObservable();
 
-  addShift(shift: RotaShift): void {
-    this._shifts.next([shift, ...this._shifts.value]);
+  private loadShifts(): RotaShift[] {
+    const raw = localStorage.getItem(this.storageKey);
+    if (!raw) return [];
+
+    try {
+      return JSON.parse(raw) as RotaShift[];
+    } catch {
+      return [];
+    }
   }
 
-  updateStatus(id: string, status: ShiftStatus): void {
-    const now = new Date().toISOString();
-    const updated = this._shifts.value.map(s =>
-      s.id === id ? { ...s, status, respondedAt: now } : s
-    );
-    this._shifts.next(updated);
+  private saveShifts(shifts: RotaShift[]): void {
+    localStorage.setItem(this.storageKey, JSON.stringify(shifts));
   }
 
   getSnapshot(): RotaShift[] {
     return this._shifts.value;
+  }
+
+  addShift(shift: RotaShift): void {
+    const updated = [shift, ...this._shifts.value];
+    this._shifts.next(updated);
+    this.saveShifts(updated);
+  }
+
+  updateShiftStatus(id: string, status: ShiftStatus): void {
+    const updated = this._shifts.value.map(s =>
+      s.id === id ? { ...s, status } : s
+    );
+
+    this._shifts.next(updated);
+    this.saveShifts(updated);
+  }
+
+  getByEmployee(name: string): RotaShift[] {
+    return this._shifts.value.filter(
+      s => s.employeeName.toLowerCase() === name.toLowerCase()
+    );
+  }
+
+  clearAll(): void {
+    this._shifts.next([]);
+    localStorage.removeItem(this.storageKey);
   }
 }
