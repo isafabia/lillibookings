@@ -1,21 +1,31 @@
 <div class="page">
+  <div class="topbar">
+  <a class="back-btn" routerLink="/home">
+    <mat-icon>chevron_left</mat-icon>
+  </a>
+
+  <div class="topbar-title">
+    <div class="small">{{ translate.t('rota') }}</div>
+  </div>
+</div>
+  
   <mat-card class="soft-card">
-    <div class="section-title">create rota shift</div>
+    <div class="section-title">{{ translate.t('create_rota_shift') }}</div>
 
     <form class="form">
       <mat-form-field appearance="outline" class="field">
-        <mat-label>employee name</mat-label>
+        <mat-label>{{ translate.t('employee_name') }}</mat-label>
         <input matInput [formControl]="form.controls.employeeName" />
       </mat-form-field>
 
       <div class="two-col">
         <mat-form-field appearance="outline" class="field">
-          <mat-label>date</mat-label>
+          <mat-label>{{ translate.t('date') }}</mat-label>
           <input matInput type="date" [formControl]="form.controls.date" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="field">
-          <mat-label>assignment type</mat-label>
+          <mat-label>{{ translate.t('assignment_type') }}</mat-label>
           <mat-select [formControl]="form.controls.assignmentType">
             <mat-option *ngFor="let type of assignmentTypes" [value]="type">
               {{ labelForType(type) }}
@@ -26,49 +36,59 @@
 
       <div class="two-col">
         <mat-form-field appearance="outline" class="field">
-          <mat-label>start time</mat-label>
+          <mat-label>{{ translate.t('start_time') }}</mat-label>
           <input matInput type="time" [formControl]="form.controls.startTime" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="field">
-          <mat-label>end time</mat-label>
+          <mat-label>{{ translate.t('end_time') }}</mat-label>
           <input matInput type="time" [formControl]="form.controls.endTime" />
         </mat-form-field>
       </div>
 
       <mat-form-field appearance="outline" class="field">
-        <mat-label>group name (optional)</mat-label>
+        <mat-label>{{ translate.t('group_name_optional') }}</mat-label>
         <input matInput [formControl]="form.controls.groupName" />
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="field">
-        <mat-label>activity name (optional)</mat-label>
+        <mat-label>{{ translate.t('activity_name_optional') }}</mat-label>
         <input matInput [formControl]="form.controls.activityName" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>{{ translate.t('booking') }}</mat-label>
+        <mat-select [formControl]="form.controls.bookingId">
+          <mat-option value="">{{ translate.t('none') }}</mat-option>
+          <mat-option *ngFor="let b of bookings" [value]="b.id">
+            {{ b.groupName }}
+          </mat-option>
+        </mat-select>
       </mat-form-field>
 
       <div class="actions-row">
         <button mat-raised-button type="button" class="primary" (click)="addShift()">
           <mat-icon>add</mat-icon>
-          add shift
+          {{ translate.t('add_shift') }}
         </button>
 
         <button mat-stroked-button type="button" routerLink="/rota/employee">
-          employee view
+          {{ translate.t('employee_view') }}
         </button>
 
         <button mat-stroked-button type="button" (click)="clearAllShifts()">
-          clear all
+          {{ translate.t('clear_all') }}
         </button>
       </div>
     </form>
   </mat-card>
 
   <mat-card class="soft-card">
-    <div class="section-title">rota shifts</div>
+    <div class="section-title">{{ translate.t('rota_shifts') }}</div>
 
     <div *ngIf="(shifts$ | async) as shifts">
       <div *ngIf="shifts.length === 0" class="empty-state">
-        no shifts added yet
+        {{ translate.t('no_shifts_added_yet') }}
       </div>
 
       <div class="shift-list">
@@ -78,14 +98,25 @@
               <div class="shift-name">{{ shift.employeeName }}</div>
               <div class="shift-type">{{ labelForType(shift.assignmentType) }}</div>
             </div>
-            <div class="shift-status">{{ shift.status }}</div>
+            <div class="shift-status">{{ translate.t(shift.status) }}</div>
           </div>
 
           <div class="shift-info">
-            <div><strong>date:</strong> {{ shift.date | date:'fullDate' }}</div>
-            <div><strong>time:</strong> {{ shift.startTime }} - {{ shift.endTime }}</div>
-            <div *ngIf="shift.groupName"><strong>group:</strong> {{ shift.groupName }}</div>
-            <div *ngIf="shift.activityName"><strong>activity:</strong> {{ shift.activityName }}</div>
+            <div><strong>{{ translate.t('date') }}:</strong> {{ shift.date }}</div>
+            <div><strong>{{ translate.t('time') }}:</strong> {{ shift.startTime }} - {{ shift.endTime }}</div>
+            <div *ngIf="shift.groupName"><strong>{{ translate.t('group') }}:</strong> {{ shift.groupName }}</div>
+            <div *ngIf="shift.activityName"><strong>{{ translate.t('activity') }}:</strong> {{ shift.activityName }}</div>
+
+            <ng-container *ngIf="shift.bookingId as bid">
+              <ng-container *ngIf="getBooking(bid) as bk">
+                <div><strong>{{ translate.t('linked_booking') }}:</strong> {{ bk.groupName }}</div>
+                <div><strong>{{ translate.t('booking_type') }}:</strong> {{ bk.bookingType === 'residential' ? translate.t('residential') : translate.t('day_group') }}</div>
+                <div><strong>{{ translate.t('group_size') }}:</strong> {{ bk.kidsCount }} {{ translate.t('kids') }} • {{ bk.teachersCount }} {{ translate.t('teachers') }}</div>
+                <div *ngIf="bk.medicalNotes?.trim()?.length">
+                  <strong>{{ translate.t('medical_notes') }}:</strong> {{ bk.medicalNotes }}
+                </div>
+              </ng-container>
+            </ng-container>
           </div>
         </div>
       </div>

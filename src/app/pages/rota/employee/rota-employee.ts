@@ -6,14 +6,22 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
-import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
-import { RotaService } from '../../../services/rota.service';
+import { RotaApiService } from '../../../services/rota-api.service';
 import { RotaShift } from '../../../models/rota-shift.model';
 
-import { BookingService } from '../../../services/booking.service';
+import { BookingApiService } from '../../../services/booking-api.service';
 import { Booking } from '../../../models/booking.model';
+import { TranslateService } from '../../../services/translate.service';
+
+interface RotaDayGroup {
+  date: Date;
+  dayName: string;
+  dayLabel: string;
+  shifts: RotaShift[];
+}
 
 @Component({
   selector: 'app-rota-employee',
@@ -29,53 +37,125 @@ import { Booking } from '../../../models/booking.model';
     MatButtonModule,
   ],
   templateUrl: './rota-employee.html',
-  styleUrl: './rota-employee.scss',
+  styleUrls: ['./rota-employee.scss'],
 })
 export class RotaEmployeeComponent {
-  shifts$: Observable<RotaShift[]>;
+  weekGroups$!: Observable<RotaDayGroup[]>;
 
-  view: 'today' | 'tomorrow' = 'today';
+  currentEmployee = '';
+  bookings: Booking[] = [];
 
   constructor(
-    private rotaService: RotaService,
-    private bookingService: BookingService
+    private rotaApi: RotaApiService,
+    private bookingApi: BookingApiService,
+    public translate: TranslateService
   ) {
-    this.shifts$ = this.rotaService.shifts$.pipe(
-      map((items: RotaShift[]) => items.filter(s => this.isInSelectedDay(s.date)))
-    );
+    const savedUser = localStorage.getItem('user');
+
+    if (savedUser) {
+      const user = JSON.parse(savedUser);
+      this.currentEmployee = user.name?.trim().toLowerCase() || '';
+    }
+
+    this.bookingApi.getBookings().subscribe({
+      next: (data) => {
+        this.bookings = data;
+      },
+      error: (err) => {
+        console.error('error loading bookings', err);
+      }
+    });
+
+    this.loadWeekRota();
   }
 
-  setView(v: 'today' | 'tomorrow'): void {
-    this.view = v;
-
-    this.shifts$ = this.rotaService.shifts$.pipe(
-      map((items: RotaShift[]) => items.filter(s => this.isInSelectedDay(s.date)))
-    );
-  }
-
-  accept(s: RotaShift): void {
-    this.rotaService.updateShiftStatus(s.id, 'accepted');
-  }
-
-  decline(s: RotaShift): void {
-    this.rotaService.updateShiftStatus(s.id, 'declined');
+  markWorked(s: RotaShift): void {
+    this.rotaApi.updateStatus(s.id, 'worked').subscribe({
+      next: () => this.loadWeekRota(),
+      error: (err) => console.error('error updating shift', err)
+    });
   }
 
   getBooking(id?: string): Booking | undefined {
     if (!id) return undefined;
-    return this.bookingService.getById(id);
+    return this.bookings.find(b => b.id === id);
   }
 
-  private isInSelectedDay(isoDate: string): boolean {
-    const shiftDay = this.stripTime(new Date(isoDate));
+  getAssignmentTypeLabel(type: string): string {
+    return this.translate.t(type.replace(/-/g, '_'));
+  }
 
-    const base = new Date();
-    if (this.view === 'tomorrow') {
-      base.setDate(base.getDate() + 1);
-    }
+  private getCurrentLocale(): string {
+    const lang = this.translate.currentLang;
 
-    const selectedDay = this.stripTime(base);
-    return shiftDay.getTime() === selectedDay.getTime();
+    if (lang === 'spanish') return 'es-ES';
+    if (lang === 'swedish') return 'sv-SE';
+    return 'en-IE';
+  }
+
+  private loadWeekRota(): void {
+    this.weekGroups$ = this.rotaApi.getAll().pipe(
+      catchError((err) => {
+        console.error('error loading rota shifts', err);
+        return of([] as RotaShift[]);
+      }),
+      map((items: RotaShift[]) => {
+        const today = this.stripTime(new Date());
+        const locale = this.getCurrentLocale();
+
+        const weekDays: Date[] = [];
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(today);
+          d.setDate(today.getDate() + i);
+          weekDays.push(this.stripTime(d));
+        }
+
+        const lastDay = new Date(today);
+        lastDay.setDate(today.getDate() + 6);
+
+        const employeeShifts = items
+          .filter(s => s.employeeName?.trim().toLowerCase() === this.currentEmployee)
+          .filter(s => s.status === 'pending' || s.status === 'accepted' || s.status === 'worked')
+          .filter(s => {
+            const shiftDate = this.parseDate(s.date);
+            return shiftDate.getTime() >= today.getTime() && shiftDate.getTime() <= lastDay.getTime();
+          })
+          .sort((a, b) => {
+            const dateCompare = this.parseDate(a.date).getTime() - this.parseDate(b.date).getTime();
+            if (dateCompare !== 0) return dateCompare;
+            return a.startTime.localeCompare(b.startTime);
+          });
+
+        return weekDays.map(dayDate => {
+          const dayShifts = employeeShifts.filter(s =>
+            this.isSameDay(this.parseDate(s.date), dayDate)
+          );
+
+          return {
+            date: dayDate,
+            dayName: dayDate.toLocaleDateString(locale, { weekday: 'long' }).toLowerCase(),
+            dayLabel: dayDate.toLocaleDateString(locale, { day: 'numeric', month: 'short' }).toLowerCase(),
+            shifts: dayShifts
+          };
+        });
+      })
+    );
+  }
+
+  private parseDate(value: string): Date {
+    if (!value) return this.stripTime(new Date());
+
+    const datePart = value.includes('T') ? value.split('T')[0] : value;
+    const [y, m, d] = datePart.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  }
+
+  private isSameDay(d1: Date, d2: Date): boolean {
+    return (
+      d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate()
+    );
   }
 
   private stripTime(d: Date): Date {

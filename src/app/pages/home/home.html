@@ -1,6 +1,5 @@
 <div class="page">
 
-  <!-- top header -->
   <header class="top">
     <div class="brand">
       <div class="logo-pill">
@@ -16,18 +15,16 @@
       <button mat-icon-button>
         <mat-icon>notifications</mat-icon>
       </button>
-      <button mat-icon-button>
+      <button mat-icon-button routerLink="/profile">
         <mat-icon>account_circle</mat-icon>
       </button>
     </div>
   </header>
 
-  <!-- welcome -->
   <div class="welcome">
-    <h1>welcome, admin 👋</h1>
+    <h1>{{ translate.t('welcome_admin') }}</h1>
   </div>
 
-  <!-- calendar -->
   <mat-card class="soft-card calendar-card">
     <div class="calendar-row">
 
@@ -62,24 +59,22 @@
     </div>
   </mat-card>
 
-  <!-- primary actions -->
   <div class="primary-actions">
     <button mat-raised-button class="pill primary" routerLink="/add-booking">
       <mat-icon>add</mat-icon>
-      add booking
+      {{ translate.t('add_booking') }}
     </button>
 
-    <button mat-stroked-button class="pill secondary">
-      <mat-icon>groups</mat-icon>
-      manage rota
+    <button mat-stroked-button class="pill secondary" routerLink="/payroll">
+      <mat-icon>payments</mat-icon>
+      payroll
     </button>
   </div>
 
-  <!-- bookings list -->
   <div class="list" *ngIf="filteredBookings$ | async as bookings">
 
     <ng-container *ngFor="let b of bookings">
-      <mat-card class="soft-card booking-card" [routerLink]="['/booking', b.id]">
+      <mat-card class="soft-card booking-card" (click)="openBooking(b)">
 
         <div class="booking-left">
           <div class="icon-chip">
@@ -90,21 +85,29 @@
         <div class="booking-main">
           <div class="booking-title">{{ b.groupName }}</div>
 
-    >
-
           <div class="booking-meta">
-            {{ b.kidsCount }} kids • {{ b.teachersCount }} teachers
+            {{ b.kidsCount }} {{ translate.t('kids') }} • {{ b.teachersCount }} {{ translate.t('teachers') }}
+          </div>
+
+          <div class="booking-meta" *ngIf="b.bookingType === 'day-group'">
+            {{ translate.t('day_group') }}
+          </div>
+
+          <div class="booking-meta" *ngIf="b.bookingType === 'residential'">
+            {{ translate.t('residential') }} • {{ b.nights ?? 1 }}
+            <span *ngIf="(b.nights ?? 1) > 1">{{ translate.t('nights') }}</span>
+            <span *ngIf="(b.nights ?? 1) === 1">{{ translate.t('night') }}</span>
           </div>
 
           <div class="notes-badge" *ngIf="b.medicalNotes?.trim()?.length">
             <mat-icon class="notes-icon">warning</mat-icon>
-            notes
+            {{ translate.t('notes') }}
           </div>
         </div>
 
         <div class="booking-right">
           <span class="status" [class.pending]="b.status === 'pending'">
-            {{ b.status }}
+            {{ translate.t(b.status) }}
           </span>
           <mat-icon class="chev">chevron_right</mat-icon>
         </div>
@@ -112,34 +115,42 @@
       </mat-card>
     </ng-container>
 
-    <!-- empty state -->
     <div class="empty" *ngIf="bookings.length === 0">
-      no bookings for this day yet ✨
+      {{ translate.t('no_bookings_today') }}
     </div>
 
   </div>
 
-  <!-- bottom nav -->
- <nav class="bottom-nav">
-  <a class="nav-item" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-    <mat-icon>home</mat-icon>
-    <span>home</span>
-  </a>
+  <nav class="bottom-nav" [class.hide-nav]="hideBottomNav">
+    <a
+      class="nav-item"
+      routerLink="/home"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <mat-icon>home</mat-icon>
+      <span>{{ translate.t('home') }}</span>
+    </a>
 
-  <a class="nav-item" routerLink="/bookings" routerLinkActive="active">
-    <mat-icon>calendar_today</mat-icon>
-    <span>bookings</span>
-  </a>
+    <a class="nav-item" routerLink="/bookings" routerLinkActive="active">
+      <mat-icon>calendar_today</mat-icon>
+      <span>{{ translate.t('bookings') }}</span>
+    </a>
 
-  <a class="nav-item" routerLink="/rota" routerLinkActive="active">
-    <mat-icon>groups</mat-icon>
-    <span>rota</span>
-  </a>
+    <a class="nav-item" routerLink="/rota" routerLinkActive="active">
+      <mat-icon>groups</mat-icon>
+      <span>{{ translate.t('rota') }}</span>
+    </a>
 
-  <a class="nav-item" routerLink="/profile" routerLinkActive="active">
-    <mat-icon>person</mat-icon>
-    <span>profile</span>
-  </a>
-</nav>
+    <a class="nav-item" routerLink="/documents" routerLinkActive="active">
+      <mat-icon>folder</mat-icon>
+      <span>{{ translate.t('docs') }}</span>
+    </a>
+
+    <a class="nav-item" routerLink="/programs" routerLinkActive="active">
+      <mat-icon>description</mat-icon>
+      <span>{{ translate.t('programs') }}</span>
+    </a>
+  </nav>
 
 </div>

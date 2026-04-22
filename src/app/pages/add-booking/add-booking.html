@@ -1,104 +1,122 @@
 <div class="page">
-  <!-- top bar -->
   <div class="topbar">
-    <a class="back" routerLink="/">
+    <a class="back" routerLink="/home">
       <mat-icon>chevron_left</mat-icon>
     </a>
 
     <div class="topbar-title">
-      <div class="small">create</div>
-      <div class="big">new booking</div>
+      <div class="small">{{ translate.t('create') }}</div>
+      <div class="big">{{ translate.t('new_booking') }}</div>
     </div>
 
     <div class="spacer"></div>
   </div>
 
-  <!-- form card -->
   <mat-card class="soft-card">
-    <!-- IMPORTANT: [formGroup]="form" -->
     <form class="form" [formGroup]="form" (ngSubmit)="save()">
-      <div class="section-title">booking details</div>
+      <div class="section-title">{{ translate.t('booking_details') }}</div>
 
       <mat-form-field appearance="outline" class="field">
-        <mat-label>group / school name</mat-label>
-        <input matInput formControlName="groupName" placeholder="e.g. st. anne’s school" />
+        <mat-label>{{ translate.t('group_school_name') }}</mat-label>
+        <input
+          matInput
+          formControlName="groupName"
+          [placeholder]="translate.t('group_school_example')"
+        />
         <mat-error *ngIf="form.controls.groupName.touched && form.controls.groupName.invalid">
-          please enter a group name
+          {{ translate.t('please_enter_group_name') }}
         </mat-error>
       </mat-form-field>
 
       <div class="two-col">
         <mat-form-field appearance="outline" class="field">
-          <mat-label>date</mat-label>
+          <mat-label>{{ translate.t('date') }}</mat-label>
           <input matInput [matDatepicker]="picker" formControlName="date" />
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
           <mat-error *ngIf="form.controls.date.touched && form.controls.date.invalid">
-            choose a date
+            {{ translate.t('choose_date') }}
           </mat-error>
         </mat-form-field>
 
-       
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>{{ translate.t('booking_type') }}</mat-label>
+          <mat-select formControlName="bookingType">
+            <mat-option value="day-group">{{ translate.t('day_group') }}</mat-option>
+            <mat-option value="residential">{{ translate.t('residential') }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="form.controls.bookingType.touched && form.controls.bookingType.invalid">
+            {{ translate.t('choose_booking_type') }}
+          </mat-error>
+        </mat-form-field>
       </div>
+
+      <mat-form-field
+        appearance="outline"
+        class="field"
+        *ngIf="form.controls.bookingType.value === 'residential'"
+      >
+        <mat-label>{{ translate.t('number_of_nights') }}</mat-label>
+        <input matInput type="number" min="1" formControlName="nights" />
+      </mat-form-field>
 
       <div class="two-col">
         <mat-form-field appearance="outline" class="field">
-          <mat-label>start time</mat-label>
+          <mat-label>{{ translate.t('start_time') }}</mat-label>
           <input matInput type="time" formControlName="startTime" />
           <mat-error *ngIf="form.controls.startTime.touched && form.controls.startTime.invalid">
-            required
+            {{ translate.t('required') }}
           </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="field">
-          <mat-label>end time</mat-label>
+          <mat-label>{{ translate.t('end_time') }}</mat-label>
           <input matInput type="time" formControlName="endTime" />
           <mat-error *ngIf="form.controls.endTime.touched && form.controls.endTime.invalid">
-            required
+            {{ translate.t('required') }}
           </mat-error>
         </mat-form-field>
       </div>
 
-      <div class="section-title">group info</div>
+      <div class="section-title">{{ translate.t('group_info') }}</div>
 
       <div class="two-col">
         <mat-form-field appearance="outline" class="field">
-          <mat-label>kids</mat-label>
+          <mat-label>{{ translate.t('kids') }}</mat-label>
           <input matInput type="number" min="0" formControlName="kidsCount" />
           <mat-error *ngIf="form.controls.kidsCount.touched && form.controls.kidsCount.invalid">
-            enter a valid number
+            {{ translate.t('enter_valid_number') }}
           </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="field">
-          <mat-label>teachers</mat-label>
+          <mat-label>{{ translate.t('teachers') }}</mat-label>
           <input matInput type="number" min="0" formControlName="teachersCount" />
           <mat-error *ngIf="form.controls.teachersCount.touched && form.controls.teachersCount.invalid">
-            enter a valid number
+            {{ translate.t('enter_valid_number') }}
           </mat-error>
         </mat-form-field>
       </div>
 
-      <div class="section-title">safety notes</div>
+      <div class="section-title">{{ translate.t('safety_notes') }}</div>
 
       <mat-form-field appearance="outline" class="field">
-        <mat-label>medical conditions / notes (optional)</mat-label>
+        <mat-label>{{ translate.t('medical_conditions_notes_optional') }}</mat-label>
         <textarea
           matInput
           rows="4"
           formControlName="medicalNotes"
-          placeholder="e.g. asthma, allergies, medication, injuries..."
+          [placeholder]="translate.t('medical_notes_example')"
         ></textarea>
       </mat-form-field>
 
       <div class="actions">
         <button type="button" mat-stroked-button class="pill secondary" routerLink="/">
-          cancel
+          {{ translate.t('cancel') }}
         </button>
 
-        <!-- IMPORTANT: submit -->
         <button mat-raised-button class="pill primary" type="submit">
-          save booking
+          {{ translate.t('save_booking') }}
         </button>
       </div>
     </form>

@@ -15,23 +15,26 @@ export class BookingService {
       teachersCount: 3,
       medicalNotes: '',
       status: 'confirmed',
+      bookingType: 'day-group',
+      nights: undefined,
     },
   ]);
 
   bookings$ = this._bookings.asObservable();
 
-  // CREATE
   addBooking(newBooking: Booking): void {
     const current = this._bookings.value;
     this._bookings.next([newBooking, ...current]);
   }
 
-  // READ (by id)
+  getAll(): Booking[] {
+    return this._bookings.value;
+  }
+
   getById(id: string): Booking | undefined {
     return this._bookings.value.find(b => b.id === id);
   }
 
-  // UPDATE
   updateBooking(updated: Booking): void {
     const current = this._bookings.value;
     const next = current.map(b =>
@@ -40,13 +43,11 @@ export class BookingService {
     this._bookings.next(next);
   }
 
-  // DELETE
   deleteBooking(id: string): void {
     const current = this._bookings.value;
     this._bookings.next(current.filter(b => b.id !== id));
   }
 
-  // optional helper
   getSnapshot(): Booking[] {
     return this._bookings.value;
   }

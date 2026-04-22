@@ -1,9 +1,3 @@
-
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
 html {
@@ -18,21 +12,74 @@ html {
   ));
 }
 
-body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
+:root {
+  --accent: #f47c20;
+  --accent-deep: #ea580c;
+  --accent-strong: #c45d14;
+}
+
+body.light-mode {
   color-scheme: light;
 
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
+  --bg-main: linear-gradient(180deg, #fff8f2 0%, #f8f1ea 100%);
+  --bg-card: rgba(255, 255, 255, 0.96);
 
-  // Reset the user agent margin.
-  margin: 0;
-  height: 100%;
+  --text-main: #2f241f;
+  --text-soft: #7b6a60;
+
+  --border-soft: rgba(244, 124, 32, 0.08);
+
+  --chip-bg: #f5eee7;
+  --chip-hover: #efe3d8;
+
+  --button-dark: #2f241f;
+
+  --shadow-soft: 0 12px 30px rgba(84, 54, 24, 0.06);
+  --shadow-medium: 0 14px 36px rgba(84, 54, 24, 0.08);
+  --shadow-strong: 0 12px 28px rgba(47, 36, 31, 0.18);
+
+  background-color: #fff8f2;
+  color: var(--text-main);
 }
-/* You can add global styles to this file, and also import other style files */
+
+body.dark-mode {
+  color-scheme: dark;
+
+  --bg-main: linear-gradient(180deg, #181818 0%, #121212 100%);
+  --bg-card: rgba(34, 34, 34, 0.96);
+
+  --text-main: #f5f5f5;
+  --text-soft: #b8b8b8;
+
+  --border-soft: rgba(255, 255, 255, 0.08);
+
+  --chip-bg: #2f2f2f;
+  --chip-hover: #3a3a3a;
+
+  --button-dark: #f47c20;
+
+  --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.22);
+  --shadow-medium: 0 14px 36px rgba(0, 0, 0, 0.26);
+  --shadow-strong: 0 12px 28px rgba(0, 0, 0, 0.24);
+
+  background-color: #181818;
+  color: var(--text-main);
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  font: var(--mat-sys-body-medium);
+  background-color: #fff8f2;
+  color: var(--text-main);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* optional helpful defaults */
+mat-card,
+input,
+select,
+textarea,
+button {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}

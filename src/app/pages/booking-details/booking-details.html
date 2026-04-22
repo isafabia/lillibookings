@@ -1,13 +1,18 @@
-<div class="page" *ngIf="booking; else notFound">
+<div class="page" *ngIf="isLoading">
+  <mat-card class="soft-card">
+    {{ translate.t('loading_booking') }}
+  </mat-card>
+</div>
 
+<div class="page" *ngIf="!isLoading && booking">
   <div class="topbar">
-    <a class="back" routerLink="/">
+    <a class="back" routerLink="/home">
       <mat-icon>chevron_left</mat-icon>
     </a>
 
     <div class="topbar-title">
-      <div class="small">booking</div>
-      <div class="big">details</div>
+      <div class="small">{{ translate.t('booking') }}</div>
+      <div class="big">{{ translate.t('details') }}</div>
     </div>
 
     <div class="spacer"></div>
@@ -18,7 +23,7 @@
 
     <div class="row">
       <mat-icon>event</mat-icon>
-      <span>{{ booking.date | date:'fullDate' }}</span>
+      <span>{{ booking.date | date:'fullDate':undefined:dateLocale }}</span>
     </div>
 
     <div class="row">
@@ -27,19 +32,36 @@
     </div>
 
     <div class="row">
+      <mat-icon>hotel</mat-icon>
+
+      <span *ngIf="booking.bookingType === 'day-group'">
+        {{ translate.t('day_group') }}
+      </span>
+
+      <span *ngIf="booking.bookingType === 'residential'">
+        {{ translate.t('residential') }} • {{ booking.nights ?? 1 }}
+        <span *ngIf="(booking.nights ?? 1) > 1">{{ translate.t('nights') }}</span>
+        <span *ngIf="(booking.nights ?? 1) === 1">{{ translate.t('night') }}</span>
+      </span>
+    </div>
+
+    <div class="row">
       <mat-icon>groups</mat-icon>
-      <span>{{ booking.kidsCount }} kids • {{ booking.teachersCount }} teachers</span>
+      <span>
+        {{ booking.kidsCount }} {{ translate.t('kids') }} •
+        {{ booking.teachersCount }} {{ translate.t('teachers') }}
+      </span>
     </div>
 
     <div class="row">
       <mat-icon>verified</mat-icon>
-      <span class="status-pill">{{ booking.status }}</span>
+      <span class="status-pill">{{ translate.t(booking.status) }}</span>
     </div>
 
     <div class="notes" *ngIf="booking.medicalNotes?.trim()?.length">
       <div class="notes-title">
         <mat-icon>warning</mat-icon>
-        medical notes
+        {{ translate.t('medical_notes') }}
       </div>
       <div class="notes-body">
         {{ booking.medicalNotes }}
@@ -47,30 +69,31 @@
     </div>
 
     <div class="notes muted" *ngIf="!booking.medicalNotes?.trim()?.length">
-      no medical notes added.
+      {{ translate.t('no_medical_notes_added') }}
     </div>
 
-    <!-- actions -->
     <div class="actions">
-      <button mat-stroked-button type="button" (click)="edit()">
+      <a
+        mat-stroked-button
+        class="edit-btn"
+        *ngIf="booking"
+        [routerLink]="['/booking', booking.id, 'edit']"
+        [state]="{ booking: booking }"
+      >
         <mat-icon>edit</mat-icon>
-        edit
-      </button>
+        {{ translate.t('edit') }}
+      </a>
 
       <button mat-raised-button color="warn" type="button" (click)="delete()">
         <mat-icon>delete</mat-icon>
-        delete
+        {{ translate.t('delete') }}
       </button>
     </div>
-
   </mat-card>
-
 </div>
 
-<ng-template #notFound>
-  <div class="page">
-    <mat-card class="soft-card">
-      booking not found.
-    </mat-card>
-  </div>
-</ng-template>
+<div class="page" *ngIf="!isLoading && notFound">
+  <mat-card class="soft-card">
+    {{ translate.t('booking_not_found') }}
+  </mat-card>
+</div>

@@ -1,0 +1,132 @@
+<div class="page">
+
+  <div class="topbar">
+    <a class="back-btn" routerLink="/home">
+      <mat-icon>chevron_left</mat-icon>
+    </a>
+
+    <div class="topbar-title">
+      <div class="small">{{ translate.t('programs') }}</div>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div>
+      <div class="eyebrow">{{ translate.t('shared_area') }}</div>
+      <h2>{{ translate.t('programs') }}</h2>
+      <p class="subtitle">{{ translate.t('activity_programs_for_staff') }}</p>
+    </div>
+  </div>
+
+  <div class="upload-card">
+    <div class="card-title">{{ translate.t('upload_program') }}</div>
+
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>linked booking</mat-label>
+      <mat-select [(ngModel)]="selectedBookingId" (selectionChange)="onBookingChange()">
+        <mat-option value="">none</mat-option>
+        <mat-option *ngFor="let b of bookings; trackBy: trackByBooking" [value]="b.id">
+          {{ b.groupName }} • {{ b.date | date:'mediumDate' }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="booking-preview" *ngIf="selectedBooking as booking">
+      <div class="preview-top">
+        <div>
+          <div class="preview-title">{{ booking.groupName }}</div>
+          <div class="preview-date">{{ booking.date | date:'fullDate' }}</div>
+        </div>
+
+        <span class="preview-badge">
+          {{ booking.bookingType === 'residential' ? translate.t('residential') : translate.t('day_group') }}
+        </span>
+      </div>
+
+      <div class="preview-meta">
+        <span>{{ booking.kidsCount }} {{ translate.t('kids') }}</span>
+        <span>•</span>
+        <span>{{ booking.teachersCount }} {{ translate.t('teachers') }}</span>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <input type="text" [placeholder]="translate.t('title')" [(ngModel)]="title" />
+      <input type="text" [placeholder]="translate.t('description')" [(ngModel)]="description" />
+    </div>
+
+    <div class="file-row">
+      <label class="file-upload">
+        <input type="file" accept="image/*" (change)="onFileChange($event)" />
+        <span>{{ translate.t('choose_image') }}</span>
+      </label>
+
+      <button class="upload-btn" (click)="upload()">
+        {{ translate.t('upload') }}
+      </button>
+    </div>
+  </div>
+
+  <div class="section" *ngIf="upcomingPrograms.length > 0">
+    <div class="section-title">upcoming programs</div>
+
+    <div class="programs-grid">
+      <div class="program-card" *ngFor="let p of upcomingPrograms; trackBy: trackByProgram">
+        <div class="image-wrap">
+          <img
+            [src]="p.imageUrl"
+            [alt]="p.title"
+            (click)="openImage(p.imageUrl)"
+            class="clickable-img"
+          />
+        </div>
+
+        <div class="program-body">
+          <div class="program-pill">{{ p.groupName }}</div>
+          <h4>{{ p.title }}</h4>
+          <p class="program-date">{{ p.date | date:'mediumDate' }}</p>
+          <p class="program-meta">
+            {{ p.kidsCount }} {{ translate.t('kids') }} • {{ p.teachersCount }} {{ translate.t('teachers') }}
+          </p>
+          <p *ngIf="p.description">{{ p.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" *ngIf="pastPrograms.length > 0">
+    <div class="section-title muted">past programs</div>
+
+    <div class="programs-grid">
+      <div class="program-card faded" *ngFor="let p of pastPrograms; trackBy: trackByProgram">
+        <div class="image-wrap">
+          <img
+            [src]="p.imageUrl"
+            [alt]="p.title"
+            (click)="openImage(p.imageUrl)"
+            class="clickable-img"
+          />
+        </div>
+
+        <div class="program-body">
+          <div class="program-pill">{{ p.groupName }}</div>
+          <h4>{{ p.title }}</h4>
+          <p class="program-date">{{ p.date | date:'mediumDate' }}</p>
+          <p class="program-meta">
+            {{ p.kidsCount }} {{ translate.t('kids') }} • {{ p.teachersCount }} {{ translate.t('teachers') }}
+          </p>
+          <p *ngIf="p.description">{{ p.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="programs.length === 0">
+    {{ translate.t('no_programs_yet') }}
+  </div>
+
+  <div class="image-modal" *ngIf="selectedImage" (click)="closeImage()">
+    <img [src]="selectedImage" class="image-modal-content" />
+  </div>
+
+</div>

@@ -11,8 +11,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 
-import { RotaService } from '../../../services/rota.service';
-import { BookingService } from '../../../services/booking.service';
+import { RotaApiService, CreateRotaShiftRequest } from '../../../services/rota-api.service';
+import { BookingApiService } from '../../../services/booking-api.service';
+import { TranslateService } from '../../../services/translate.service';
 import { RotaShift } from '../../../models/rota-shift.model';
 import { Booking } from '../../../models/booking.model';
 
@@ -36,7 +37,7 @@ import { LILLIPUT_ACTIVITIES } from '../../../constants/activities';
     MatSelectModule,
   ],
   templateUrl: './rota-admin.html',
-  styleUrl: './rota-admin.scss',
+  styleUrls: ['./rota-admin.scss'],
 })
 export class RotaAdminComponent {
   activities = LILLIPUT_ACTIVITIES;
@@ -48,33 +49,30 @@ export class RotaAdminComponent {
   ];
 
   bookings: Booking[] = [];
-
-  // ✅ for recent shifts list
   shifts$!: Observable<RotaShift[]>;
 
   form: any;
 
   constructor(
     private fb: FormBuilder,
-    private rotaService: RotaService,
-    private bookingService: BookingService
+    private rotaApi: RotaApiService,
+    private bookingApi: BookingApiService,
+    public translate: TranslateService
   ) {
-    // ✅ recent shifts stream
-    this.shifts$ = this.rotaService.shifts$;
+    this.shifts$ = this.rotaApi.getAll();
 
-    // ✅ bookings snapshot for dropdown
-    this.bookings = this.bookingService.getSnapshot?.() ?? [];
+    this.bookingApi.getBookings().subscribe({
+      next: (data) => (this.bookings = data),
+      error: (err) => console.error('error loading bookings', err),
+    });
 
-    // ✅ form with real default activity
     this.form = this.fb.group({
       date: [new Date().toISOString().slice(0, 10), [Validators.required]],
       startTime: ['09:00', [Validators.required]],
       endTime: ['13:00', [Validators.required]],
       type: ['activity', [Validators.required]],
-
       activity: [this.activities[0], [Validators.required]],
       groupName: [''],
-
       employeeId: ['emp1', [Validators.required]],
       bookingId: [''],
     });
@@ -89,29 +87,46 @@ export class RotaAdminComponent {
     const v = this.form.value;
     const emp = this.employees.find(e => e.id === v.employeeId);
 
-   const shift: RotaShift = {
-  id: crypto.randomUUID(),
-  employeeName: String(v.employeeName ?? '').trim(),
-  date: new Date(v.date).toISOString(),
-  startTime: String(v.startTime ?? ''),
-  endTime: String(v.endTime ?? ''),
-  assignmentType: v.assignmentType,
-  groupName: String(v.groupName ?? '').trim() || undefined,
-  activityName: String(v.activityName ?? '').trim() || undefined,
-  status: 'pending',
-};
-    this.rotaService.addShift(shift);
+    const selectedDate = new Date(v.date);
 
-    // ✅ reset form (activity must be a string, not an array)
-    this.form.reset({
-      date: new Date().toISOString().slice(0, 10),
-      startTime: '09:00',
-      endTime: '13:00',
-      type: 'activity',
-      activity: this.activities[0],
-      groupName: '',
-      employeeId: 'emp1',
-      bookingId: '',
+    const formattedDate =
+      selectedDate.getFullYear() + '-' +
+      String(selectedDate.getMonth() + 1).padStart(2, '0') + '-' +
+      String(selectedDate.getDate()).padStart(2, '0');
+
+    const shift: CreateRotaShiftRequest = {
+      employeeId: String(v.employeeId ?? ''),
+      employeeName: emp?.name ?? '',
+      date: formattedDate,
+      startTime: String(v.startTime ?? ''),
+      endTime: String(v.endTime ?? ''),
+      assignmentType: v.type === 'activity' ? 'activity-station' : 'follow-day-group',
+      activity: String(v.activity ?? '').trim() || null,
+      groupName: String(v.groupName ?? '').trim() || null,
+      bookingId: v.bookingId || null,
+      status: 'pending',
+      confirmedWorked: false,
+    };
+
+    this.rotaApi.create(shift).subscribe({
+      next: () => {
+        this.shifts$ = this.rotaApi.getAll();
+
+        this.form.reset({
+          date: new Date().toISOString().slice(0, 10),
+          startTime: '09:00',
+          endTime: '13:00',
+          type: 'activity',
+          activity: this.activities[0],
+          groupName: '',
+          employeeId: 'emp1',
+          bookingId: '',
+        });
+      },
+      error: (err) => {
+        console.error('error saving shift', err);
+        alert(this.translate.t('error_saving_shift'));
+      }
     });
   }
 }

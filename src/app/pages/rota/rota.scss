@@ -1,25 +1,69 @@
 .page {
   display: grid;
-  gap: 20px;
+  gap: 22px;
   padding: 24px;
+  background: var(--bg-main);
+  min-height: 100vh;
+  color: var(--text-main);
 }
 
-.soft-card {
-  border-radius: 24px;
-  padding: 20px;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06);
+/* 🔙 TOPBAR */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
 }
 
-.section-title {
-  font-size: 1.15rem;
-  font-weight: 700;
-  margin-bottom: 16px;
+.back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  text-decoration: none;
+  color: var(--text-main);
+  box-shadow: var(--shadow-soft);
+  transition: all 0.18s ease;
+}
+
+.back-btn:hover {
+  transform: translateX(-3px);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-medium);
+}
+
+.topbar-title .small {
+  font-size: 13px;
+  color: var(--text-soft);
   text-transform: lowercase;
 }
 
+/* CARDS */
+.soft-card {
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: var(--shadow-soft);
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+}
+
+/* TITLES */
+.section-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin-bottom: 18px;
+  text-transform: lowercase;
+  color: var(--text-main);
+}
+
+/* FORM */
 .form {
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
 
 .two-col {
@@ -32,28 +76,38 @@
   width: 100%;
 }
 
+/* BUTTONS */
 .actions-row {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 .primary {
   border-radius: 999px;
-  padding-inline: 20px;
+  padding-inline: 22px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%) !important;
+  color: white !important;
 }
 
+/* SHIFT LIST */
 .shift-list {
   display: grid;
-  gap: 14px;
+  gap: 16px;
 }
 
 .shift-card {
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border-soft);
   border-radius: 20px;
-  padding: 16px;
-  background: #fff;
+  padding: 18px;
+  background: var(--bg-card);
+  transition: 0.18s ease;
+}
+
+.shift-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
 }
 
 .shift-top {
@@ -61,44 +115,52 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .shift-name {
-  font-weight: 700;
+  font-weight: 800;
   font-size: 1rem;
   text-transform: lowercase;
+  color: var(--text-main);
 }
 
 .shift-type {
-  opacity: 0.7;
-  font-size: 0.92rem;
+  opacity: 0.8;
+  font-size: 0.9rem;
   text-transform: lowercase;
-  margin-top: 2px;
+  margin-top: 3px;
+  color: var(--text-soft);
 }
 
 .shift-status {
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.82rem;
+  font-weight: 700;
   text-transform: lowercase;
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.06);
+  background: var(--chip-bg);
+  color: var(--text-main);
 }
 
+/* INFO */
 .shift-info {
   display: grid;
   gap: 6px;
-  font-size: 0.94rem;
-  line-height: 1.35;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  color: var(--text-main);
 }
 
+/* EMPTY */
 .empty-state {
-  opacity: 0.7;
+  opacity: 0.8;
   padding: 10px 0;
   text-transform: lowercase;
+  color: var(--text-soft);
 }
 
+/* LINKS */
 .pill-link {
   display: inline-flex;
   align-items: center;
@@ -107,14 +169,46 @@
   padding: 0 16px;
   border-radius: 999px;
   text-decoration: none;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  color: inherit;
-  background: #fff;
+  border: 1px solid var(--border-soft);
+  color: var(--text-main);
+  background: var(--bg-card);
 }
 
+/* STATUS PILLS */
+.status-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: lowercase;
+  width: fit-content;
+}
+
+.status-pill.pending {
+  background: #eee;
+  color: #555;
+}
+
+.status-pill.accepted {
+  background: #d4f8e8;
+  color: #1f7a5c;
+}
+
+.status-pill.declined {
+  background: #ffe0e0;
+  color: #a33;
+}
+
+.status-pill.worked {
+  background: #e0ecff;
+  color: #2b4ea2;
+}
+
+/* MOBILE */
 @media (max-width: 700px) {
   .page {
     padding: 16px;
+    gap: 18px;
   }
 
   .two-col {
@@ -124,5 +218,9 @@
   .actions-row {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .soft-card {
+    padding: 18px;
   }
 }

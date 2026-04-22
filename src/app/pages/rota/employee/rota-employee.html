@@ -1,75 +1,105 @@
 <div class="page">
+
   <div class="topbar">
-    <a class="back" routerLink="/rota">
+    <a class="back" routerLink="/employee-home">
       <mat-icon>chevron_left</mat-icon>
     </a>
 
     <div class="topbar-title">
-      <div class="toggle">
-        <button
-          type="button"
-          class="toggle-btn"
-          [class.active]="view === 'today'"
-          (click)="setView('today')"
-        >
-          today
-        </button>
-
-        <button
-          type="button"
-          class="toggle-btn"
-          [class.active]="view === 'tomorrow'"
-          (click)="setView('tomorrow')"
-        >
-          tomorrow
-        </button>
-      </div>
-
-      <div class="small">employee</div>
-      <div class="big">my rota</div>
+      <div class="small">{{ translate.t('employee') }}</div>
+      <div class="big">{{ translate.t('my_rota') }}</div>
     </div>
 
     <div class="spacer"></div>
   </div>
 
-  <div class="list" *ngIf="shifts$ | async as shifts">
+  <div class="calendar-grid" *ngIf="weekGroups$ | async as weekGroups">
 
-    <mat-card class="soft-card shift-card" *ngFor="let s of shifts">
-      <div class="left">
-        <div class="icon-chip">
-          <mat-icon>schedule</mat-icon>
-        </div>
+    <div class="day-column" *ngFor="let day of weekGroups">
+
+      <div class="day-header">
+        <div class="day-name">{{ day.dayName }}</div>
+        <div class="day-date">{{ day.dayLabel }}</div>
       </div>
 
-      <div class="main">
-        <div class="title">
-          {{ s.startTime }} – {{ s.endTime }}
-          <span *ngIf="s.activityName"> • {{ s.activityName }}</span>
-        </div>
+      <div class="day-slot">
 
-        <div class="sub" *ngIf="s.groupName">
-          {{ s.groupName }}
-        </div>
+        <ng-container *ngIf="day.shifts.length > 0; else emptyDay">
 
-        <div class="status-pill" [ngClass]="s.status">
-          {{ s.status }}
-        </div>
+          <div class="shift-card" *ngFor="let s of day.shifts">
+
+            <div class="shift-time-row">
+              <div class="icon-chip">
+                <mat-icon>schedule</mat-icon>
+              </div>
+
+              <div class="shift-time">
+                {{ s.startTime }} – {{ s.endTime }}
+              </div>
+            </div>
+
+            <div class="sub">
+              {{ getAssignmentTypeLabel(s.assignmentType) }}
+              <span *ngIf="s.activity || s.activityName"> • {{ s.activity || s.activityName }}</span>
+            </div>
+
+            <div class="sub" *ngIf="s.groupName">
+              {{ s.groupName }}
+            </div>
+
+            <ng-container *ngIf="s.bookingId as bid">
+              <ng-container *ngIf="getBooking(bid) as bk">
+                <div class="booking-box">
+                  <div class="booking-title">{{ bk.groupName }}</div>
+
+                  <div class="sub">
+                    {{ bk.bookingType === 'residential' ? translate.t('residential') : translate.t('day_group') }}
+                    <span *ngIf="bk.bookingType === 'residential'">
+                      • {{ bk.nights ?? 1 }}
+                      <span *ngIf="(bk.nights ?? 1) > 1">{{ translate.t('nights') }}</span>
+                      <span *ngIf="(bk.nights ?? 1) === 1">{{ translate.t('night') }}</span>
+                    </span>
+                  </div>
+
+                  <div class="sub">
+                    {{ bk.kidsCount }} {{ translate.t('kids') }} • {{ bk.teachersCount }} {{ translate.t('teachers') }}
+                  </div>
+
+                  <div class="notes" *ngIf="bk.medicalNotes?.trim()?.length">
+                    <mat-icon class="warn">warning</mat-icon>
+                    {{ bk.medicalNotes }}
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+
+            <div class="status-pill" [ngClass]="s.status">
+              {{ translate.t(s.status) }}
+            </div>
+
+            <div class="actions" *ngIf="s.status === 'accepted'">
+              <button
+                mat-raised-button
+                type="button"
+                class="worked-btn"
+                (click)="markWorked(s)"
+              >
+                {{ translate.t('mark_worked') }}
+              </button>
+            </div>
+
+          </div>
+
+        </ng-container>
+
+        <ng-template #emptyDay>
+          <div class="empty-text">{{ translate.t('no_shifts') }}</div>
+        </ng-template>
+
       </div>
 
-      <div class="right" *ngIf="s.status === 'pending'">
-        <button mat-stroked-button type="button" (click)="decline(s)">
-          decline
-        </button>
-
-        <button mat-raised-button type="button" class="accept" (click)="accept(s)">
-          accept
-        </button>
-      </div>
-    </mat-card>
-
-    <div class="empty" *ngIf="shifts.length === 0">
-      no shifts yet ✨
     </div>
 
   </div>
+
 </div>

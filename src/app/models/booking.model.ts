@@ -1,5 +1,5 @@
 export interface Booking {
-  id: string;
+  id?: string;
   groupName: string;
   date: string; // ISO string
   startTime: string;
@@ -8,4 +8,6 @@ export interface Booking {
   teachersCount: number;
   medicalNotes?: string;
   status: 'confirmed' | 'pending' | 'cancelled';
+  bookingType: 'day-group' | 'residential';
+  nights?: number; // Only for residential bookings
 }

@@ -7,7 +7,6 @@ import { Booking } from '../models/booking.model';
   providedIn: 'root'
 })
 export class BookingApiService {
-
   private apiUrl = 'http://localhost:5180/api/Bookings';
 
   constructor(private http: HttpClient) {}
@@ -20,11 +19,15 @@ export class BookingApiService {
     return this.http.get<Booking[]>(this.apiUrl);
   }
 
-  updateBooking(id: string, booking: Booking) {
-  return this.http.put(`${this.apiUrl}/${id}`, booking);
-}
+  getBookingById(id: string): Observable<Booking> {
+    return this.http.get<Booking>(`${this.apiUrl}/${id}`);
+  }
 
-deleteBooking(id: string) {
-  return this.http.delete(`${this.apiUrl}/${id}`);
-}
+  updateBooking(id: string, booking: Booking) {
+    return this.http.put(`${this.apiUrl}/${id}`, booking);
+  }
+
+  deleteBooking(id: string) {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
 }

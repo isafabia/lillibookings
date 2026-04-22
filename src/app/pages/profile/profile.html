@@ -1,1 +1,80 @@
-<p>profile works!</p>
+<div class="profile-page" *ngIf="user">
+  <div class="profile-shell">
+
+    <div class="profile-topbar">
+      <a class="back-btn" [routerLink]="user.role === 'admin' ? '/home' : '/employee-home'">
+        ←
+      </a>
+
+      <div class="topbar-copy">
+        <div class="eyebrow">{{ translate.t('account') }}</div>
+        <h1>{{ translate.t('profile') }}</h1>
+      </div>
+    </div>
+
+    <div class="profile-card hero-card">
+      <div class="avatar-circle">
+        {{ user.name?.charAt(0) }}
+      </div>
+
+      <div class="hero-copy">
+        <h2>{{ user.name }}</h2>
+        <p>{{ user.email }}</p>
+        <span class="role-badge">{{ user.role }}</span>
+      </div>
+    </div>
+
+    <div class="settings-stack">
+      <div class="setting-card">
+        <div class="setting-copy">
+          <div class="setting-title">{{ translate.t('appearance') }}</div>
+          <div class="setting-subtitle">{{ translate.t('appearance_helper') }}</div>
+        </div>
+
+        <button class="action-btn" (click)="toggleTheme()">
+          {{ currentTheme === 'light' ? translate.t('switch_to_dark') : translate.t('switch_to_light') }}
+        </button>
+      </div>
+
+      <div class="setting-card">
+        <div class="setting-copy">
+          <div class="setting-title">{{ translate.t('language') }}</div>
+          <div class="setting-subtitle">{{ translate.t('language_helper') }}</div>
+        </div>
+
+        <div class="language-row">
+          <button
+            class="chip-btn"
+            [class.active]="currentLanguage === 'english'"
+            (click)="setLanguage('english')"
+          >
+            english
+          </button>
+
+          <button
+            class="chip-btn"
+            [class.active]="currentLanguage === 'spanish'"
+            (click)="setLanguage('spanish')"
+          >
+            spanish
+          </button>
+
+          <button
+            class="chip-btn"
+            [class.active]="currentLanguage === 'swedish'"
+            (click)="setLanguage('swedish')"
+          >
+            swedish
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="logout-wrap">
+      <button class="logout-btn" (click)="logout()">
+        {{ translate.t('logout') }}
+      </button>
+    </div>
+
+  </div>
+</div>

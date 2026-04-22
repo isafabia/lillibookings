@@ -1,0 +1,129 @@
+.page {
+  padding: 16px;
+  padding-bottom: 90px;
+  background: var(--bg-main);
+  min-height: 100vh;
+  color: var(--text-main);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.back {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  background: var(--accent-soft);
+  color: var(--text-main);
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.topbar-title {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.small {
+  font-size: 13px;
+  text-transform: lowercase;
+  color: var(--text-soft);
+  font-weight: 600;
+}
+
+.big {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--text-main);
+  text-transform: lowercase;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.soft-card {
+  border-radius: 24px;
+  padding: 18px;
+  background: var(--bg-card);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--border-soft);
+}
+
+.loading-card {
+  text-transform: lowercase;
+  color: var(--text-soft);
+  font-weight: 600;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-main);
+  text-transform: lowercase;
+  margin-top: 4px;
+  margin-bottom: 2px;
+}
+
+.field {
+  width: 100%;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.pill {
+  height: 46px;
+  border-radius: 16px !important;
+  padding: 0 20px !important;
+  font-weight: 700;
+  text-transform: lowercase;
+  box-shadow: none !important;
+}
+
+.primary {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%) !important;
+  color: white !important;
+}
+
+.secondary {
+  border-color: var(--border-soft) !important;
+  color: var(--text-main) !important;
+  background: var(--bg-card) !important;
+}
+
+@media (max-width: 720px) {
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .pill {
+    width: 100%;
+  }
+}

@@ -1,13 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AsyncPipe, NgFor, NgIf, NgClass } from '@angular/common';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Booking } from '../../models/booking.model';
 import { BookingApiService } from '../../services/booking-api.service';
+import { TranslateService } from '../../services/translate.service';
 
 @Component({
   selector: 'app-home',
@@ -24,23 +25,28 @@ import { BookingApiService } from '../../services/booking-api.service';
     AsyncPipe
   ],
   templateUrl: './home.html',
-  styleUrl: './home.scss',
+  styleUrls: ['./home.scss'],
 })
 export class HomeComponent {
+  hideBottomNav = false;
+  private lastScrollY = 0;
+
   selectedDate: Date;
   weekDays: Date[];
 
   bookings$!: Observable<Booking[]>;
   filteredBookings$!: Observable<Booking[]>;
 
-  constructor(private bookingApi: BookingApiService) {
+  constructor(
+    private bookingApi: BookingApiService,
+    private router: Router,
+    public translate: TranslateService
+  ) {
     this.selectedDate = this.stripTime(new Date());
     this.weekDays = this.getWeekDays(this.selectedDate);
 
-    // load bookings from backend
     this.bookings$ = this.bookingApi.getBookings();
 
-    // filter bookings for selected day
     this.filteredBookings$ = this.bookings$.pipe(
       map((items: Booking[]) =>
         items.filter(b => this.isSameLocalDate(b.date, this.selectedDate))
@@ -48,9 +54,41 @@ export class HomeComponent {
     );
   }
 
+  @HostListener('window:scroll')
+  onScroll(): void {
+    const current = window.scrollY || 0;
+
+    if (current <= 10) {
+      this.hideBottomNav = false;
+      this.lastScrollY = current;
+      return;
+    }
+
+    if (current > this.lastScrollY && current > 80) {
+      this.hideBottomNav = true;
+    } else {
+      this.hideBottomNav = false;
+    }
+
+    this.lastScrollY = current;
+  }
+
+  openBooking(booking: Booking): void {
+    if (!booking.id) return;
+
+    localStorage.setItem('selectedBooking', JSON.stringify(booking));
+    this.router.navigate(['/booking', booking.id]);
+  }
+
+  logout(): void {
+    localStorage.removeItem('user');
+    localStorage.removeItem('selectedBooking');
+    this.router.navigate(['/login']);
+  }
+
   get monthLabel(): string {
     return this.selectedDate
-      .toLocaleString('en-IE', { month: 'long', year: 'numeric' })
+      .toLocaleString(this.getCurrentLocale(), { month: 'long', year: 'numeric' })
       .toLowerCase();
   }
 
@@ -82,11 +120,19 @@ export class HomeComponent {
   }
 
   dayName(d: Date): string {
-    return d.toLocaleString('en-IE', { weekday: 'short' }).toLowerCase();
+    return d.toLocaleString(this.getCurrentLocale(), { weekday: 'short' }).toLowerCase();
   }
 
   dayNumber(d: Date): number {
     return d.getDate();
+  }
+
+  private getCurrentLocale(): string {
+    const lang = this.translate.currentLang;
+
+    if (lang === 'spanish') return 'es-ES';
+    if (lang === 'swedish') return 'sv-SE';
+    return 'en-IE';
   }
 
   private isSameLocalDate(dateString: string, selected: Date): boolean {

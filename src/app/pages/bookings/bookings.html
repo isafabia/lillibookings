@@ -1,1 +1,116 @@
-<p>bookings works!</p>
+<div class="page">
+  <div class="page-shell">
+
+    <div class="topbar">
+      <a class="back-btn" routerLink="/home">
+        <mat-icon>chevron_left</mat-icon>
+      </a>
+
+      <div class="topbar-title">
+        <div class="small">{{ translate.t('bookings') }}</div>
+      </div>
+    </div>
+
+    <div class="page-header">
+      <div class="header-text">
+        <div class="eyebrow">{{ translate.t('admin') }}</div>
+        <h2>{{ translate.t('bookings') }}</h2>
+        <p class="subtitle">{{ translate.t('manage_rota') }}</p>
+      </div>
+    </div>
+
+    <ng-container *ngIf="bookings$ | async as bookings">
+
+      <div class="empty-state" *ngIf="bookings.length === 0">
+        <div class="empty-title">{{ translate.t('no_bookings_today') }}</div>
+        <div class="empty-text">{{ translate.t('add_booking') }}</div>
+      </div>
+
+      <div class="section" *ngIf="getUpcoming(bookings).length > 0">
+        <div class="section-title">upcoming bookings</div>
+
+        <div class="bookings-grid">
+          <div
+            class="booking-card"
+            *ngFor="let b of getUpcoming(bookings); trackBy: trackByBooking"
+            (click)="openBooking(b)"
+          >
+            <ng-container *ngTemplateOutlet="card; context: { $implicit: b }"></ng-container>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" *ngIf="getPast(bookings).length > 0">
+        <button type="button" class="past-toggle" (click)="togglePast()">
+          <span>{{ showPast ? 'hide past bookings' : 'show past bookings' }}</span>
+          <mat-icon>{{ showPast ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </button>
+
+        <div class="past-helper" *ngIf="!showPast">
+          showing only upcoming bookings. past bookings from the last 30 days can be opened here.
+        </div>
+
+        <div *ngIf="showPast">
+          <div class="section-title muted">past bookings</div>
+
+          <div class="bookings-grid">
+            <div
+              class="booking-card faded"
+              *ngFor="let b of getPast(bookings); trackBy: trackByBooking"
+              (click)="openBooking(b)"
+            >
+              <ng-container *ngTemplateOutlet="card; context: { $implicit: b }"></ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </ng-container>
+
+    <ng-template #card let-b="$implicit">
+      <div class="card-top">
+        <div class="group-block">
+          <div class="group-name">{{ b.groupName }}</div>
+          <div class="group-date">{{ b.date | date:'mediumDate' }}</div>
+        </div>
+
+        <div
+          class="status"
+          [class.pending]="b.status === 'pending'"
+          [class.confirmed]="b.status === 'confirmed'"
+        >
+          {{ b.status || translate.t('pending') }}
+        </div>
+      </div>
+
+      <div class="card-divider"></div>
+
+      <div class="info-list">
+        <div class="info-row">
+          <span class="info-label">{{ translate.t('group') }}</span>
+          <span class="info-value">
+            {{ b.bookingType === 'residential' ? translate.t('residential') : translate.t('day_group') }}
+            <span *ngIf="b.bookingType === 'residential'">
+              • {{ b.nights ?? 1 }}
+              {{ (b.nights ?? 1) > 1 ? translate.t('nights') : translate.t('night') }}
+            </span>
+          </span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">{{ translate.t('kids') }} / {{ translate.t('teachers') }}</span>
+          <span class="info-value">
+            {{ b.kidsCount }} {{ translate.t('kids') }} •
+            {{ b.teachersCount }} {{ translate.t('teachers') }}
+          </span>
+        </div>
+      </div>
+
+      <div class="notes" *ngIf="b.medicalNotes?.trim()?.length">
+        <span class="notes-label">{{ translate.t('notes') }}</span>
+        <span class="notes-text">{{ b.medicalNotes }}</span>
+      </div>
+    </ng-template>
+
+  </div>
+</div>

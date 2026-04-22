@@ -1,0 +1,95 @@
+<div class="page">
+
+  <!-- 🔙 TOP BAR WITH BACK BUTTON -->
+  <div class="topbar">
+    <a class="back-btn" routerLink="/home">
+      ←
+    </a>
+
+    <div class="topbar-title">
+      <div class="small">{{ translate.t('documents') }}</div>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div>
+      <div class="eyebrow">{{ translate.t('shared_area') }}</div>
+      <h2>{{ translate.t('documents') }}</h2>
+      <p class="subtitle">{{ translate.t('documents_subtitle') }}</p>
+    </div>
+  </div>
+
+  <div class="upload-card">
+    <div class="card-title">{{ translate.t('upload_document') }}</div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>{{ translate.t('title') }}</label>
+        <input
+          type="text"
+          [placeholder]="translate.t('enter_document_title')"
+          [(ngModel)]="title"
+        />
+      </div>
+
+      <div class="field">
+        <label>{{ translate.t('category') }}</label>
+        <select [(ngModel)]="category">
+          <option value="garda-vetting">{{ translate.t('garda_vetting') }}</option>
+          <option value="health-safety">{{ translate.t('health_safety') }}</option>
+          <option value="first-aid">{{ translate.t('first_aid') }}</option>
+          <option value="other">{{ translate.t('other') }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="file-row">
+      <label class="file-upload">
+        <input type="file" accept="image/*" (change)="onFileChange($event)" />
+        <span>{{ translate.t('choose_image') }}</span>
+      </label>
+
+      <button class="upload-btn" (click)="upload()">
+        {{ translate.t('upload') }}
+      </button>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <div>
+      <h3>{{ translate.t('all_documents') }}</h3>
+      <p>{{ documents.length }} {{ translate.t('uploaded') }}</p>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="documents.length === 0">
+    {{ translate.t('no_documents_uploaded_yet') }}
+  </div>
+
+  <div class="documents-grid" *ngIf="documents.length > 0">
+    <div class="doc-card" *ngFor="let doc of documents">
+      <div class="image-wrap">
+        <img *ngIf="doc.imageUrl" [src]="doc.imageUrl" [alt]="doc.title" />
+      </div>
+
+      <div class="doc-body">
+        <div class="doc-top">
+          <h4>{{ doc.title }}</h4>
+          <span class="category-pill">
+            {{
+              doc.category === 'garda-vetting' ? translate.t('garda_vetting') :
+              doc.category === 'health-safety' ? translate.t('health_safety') :
+              doc.category === 'first-aid' ? translate.t('first_aid') :
+              translate.t('other')
+            }}
+          </span>
+        </div>
+
+        <div class="meta-row">
+          <span>{{ translate.t('uploaded_by') }} {{ doc.uploadedBy }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

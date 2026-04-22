@@ -1,79 +1,100 @@
 <div class="page">
   <div class="topbar">
-    <a class="back" routerLink="/">
+    <a class="back" routerLink="/home">
       <mat-icon>chevron_left</mat-icon>
     </a>
 
     <div class="topbar-title">
-      <div class="small">edit</div>
-      <div class="big">booking</div>
+      <div class="small">{{ translate.t('edit') }}</div>
+      <div class="big">{{ translate.t('booking') }}</div>
     </div>
 
     <div class="spacer"></div>
   </div>
 
-  <mat-card class="soft-card">
+  <mat-card class="soft-card" *ngIf="!isLoading">
     <form class="form" (ngSubmit)="save()" [formGroup]="form">
 
-      <div class="section-title">booking details</div>
+      <div class="section-title">{{ translate.t('booking_details_title') }}</div>
 
       <mat-form-field appearance="outline" class="field">
-        <mat-label>group / school name</mat-label>
+        <mat-label>{{ translate.t('group_school_name') }}</mat-label>
         <input matInput formControlName="groupName" />
       </mat-form-field>
 
       <div class="two-col">
         <mat-form-field appearance="outline" class="field">
-          <mat-label>date</mat-label>
+          <mat-label>{{ translate.t('date') }}</mat-label>
           <input matInput [matDatepicker]="picker" formControlName="date" />
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
+
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>{{ translate.t('booking_type') }}</mat-label>
+          <mat-select formControlName="bookingType">
+            <mat-option value="day-group">{{ translate.t('day_group') }}</mat-option>
+            <mat-option value="residential">{{ translate.t('residential') }}</mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
+
+      <mat-form-field
+        appearance="outline"
+        class="field"
+        *ngIf="form.controls.bookingType.value === 'residential'"
+      >
+        <mat-label>{{ translate.t('number_of_nights') }}</mat-label>
+        <input matInput type="number" min="1" formControlName="nights" />
+      </mat-form-field>
 
       <div class="two-col">
         <mat-form-field appearance="outline" class="field">
-          <mat-label>start time</mat-label>
+          <mat-label>{{ translate.t('start_time') }}</mat-label>
           <input matInput type="time" formControlName="startTime" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="field">
-          <mat-label>end time</mat-label>
+          <mat-label>{{ translate.t('end_time') }}</mat-label>
           <input matInput type="time" formControlName="endTime" />
         </mat-form-field>
       </div>
 
-      <div class="section-title">group info</div>
+      <div class="section-title">{{ translate.t('group_info') }}</div>
 
       <div class="two-col">
         <mat-form-field appearance="outline" class="field">
-          <mat-label>kids</mat-label>
+          <mat-label>{{ translate.t('kids') }}</mat-label>
           <input matInput type="number" min="0" formControlName="kidsCount" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="field">
-          <mat-label>teachers</mat-label>
+          <mat-label>{{ translate.t('teachers') }}</mat-label>
           <input matInput type="number" min="0" formControlName="teachersCount" />
         </mat-form-field>
       </div>
 
-      <div class="section-title">safety notes</div>
+      <div class="section-title">{{ translate.t('safety_notes') }}</div>
 
       <mat-form-field appearance="outline" class="field">
-        <mat-label>medical conditions / notes</mat-label>
+        <mat-label>{{ translate.t('medical_conditions_notes') }}</mat-label>
         <textarea matInput rows="4" formControlName="medicalNotes"></textarea>
       </mat-form-field>
 
       <div class="actions">
         <button type="button" mat-stroked-button class="pill secondary" routerLink="/">
-          cancel
+          {{ translate.t('cancel') }}
         </button>
 
         <button mat-raised-button class="pill primary" type="submit">
-          save changes
+          {{ translate.t('save_changes') }}
         </button>
       </div>
 
     </form>
+  </mat-card>
+
+  <mat-card class="soft-card loading-card" *ngIf="isLoading">
+    {{ translate.t('loading_booking') }}
   </mat-card>
 </div>

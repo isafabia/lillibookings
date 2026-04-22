@@ -1,0 +1,33 @@
+<div class="login-page">
+  <div class="login-card">
+    <div class="eyebrow">lilliput adventure centre</div>
+    <h1>login</h1>
+    <p class="subtitle">sign in to continue</p>
+
+    <div class="form-group">
+      <label for="email">email</label>
+      <input
+        id="email"
+        type="email"
+        [(ngModel)]="email"
+        placeholder="enter your email"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="password">password</label>
+      <input
+        id="password"
+        type="password"
+        [(ngModel)]="password"
+        placeholder="enter your password"
+      />
+    </div>
+
+    <button class="login-btn" (click)="login()">login</button>
+
+    <div class="error-message" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+  </div>
+</div>

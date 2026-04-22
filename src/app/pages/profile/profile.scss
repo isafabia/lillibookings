@@ -1,0 +1,253 @@
+.profile-page {
+  min-height: 100vh;
+  padding: 28px 16px 120px;
+  background:
+    radial-gradient(circle at top left, rgba(244, 124, 32, 0.1), transparent 28%),
+    var(--bg-main);
+}
+
+.profile-shell {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.profile-topbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.back-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-strong);
+  text-decoration: none;
+  font-size: 24px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.topbar-copy {
+  display: flex;
+  flex-direction: column;
+}
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 900;
+  color: var(--text-main);
+  text-transform: lowercase;
+}
+
+.profile-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-medium);
+  border-radius: 28px;
+}
+
+.hero-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 30px 22px;
+  margin-bottom: 18px;
+}
+
+.avatar-circle {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+  color: white;
+  font-size: 34px;
+  font-weight: 900;
+  text-transform: uppercase;
+  box-shadow: 0 14px 24px rgba(234, 88, 12, 0.22);
+  margin-bottom: 16px;
+}
+
+.hero-copy h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-main);
+  text-transform: lowercase;
+}
+
+.hero-copy p {
+  margin: 8px 0 12px;
+  font-size: 14px;
+  color: var(--text-soft);
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: lowercase;
+}
+
+.settings-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.setting-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px;
+  border-radius: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+}
+
+.setting-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.setting-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-main);
+  text-transform: lowercase;
+  margin-bottom: 6px;
+}
+
+.setting-subtitle {
+  font-size: 13px;
+  color: var(--text-soft);
+  text-transform: lowercase;
+  line-height: 1.4;
+}
+
+.action-btn {
+  border: none;
+  border-radius: 16px;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+  text-transform: lowercase;
+  box-shadow: 0 10px 20px rgba(234, 88, 12, 0.18);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  white-space: nowrap;
+}
+
+.action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 24px rgba(234, 88, 12, 0.22);
+}
+
+.language-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.chip-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 10px 14px;
+  background: var(--chip-bg);
+  color: var(--text-soft);
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: lowercase;
+  transition: all 0.18s ease;
+}
+
+.chip-btn:hover {
+  background: var(--chip-hover);
+}
+
+.chip-btn.active {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+  color: white;
+  box-shadow: 0 10px 18px rgba(234, 88, 12, 0.18);
+}
+
+.logout-wrap {
+  margin-top: 20px;
+}
+
+.logout-btn {
+  width: 100%;
+  border: none;
+  border-radius: 22px;
+  padding: 16px;
+  background: var(--button-dark);
+  color: white;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  text-transform: lowercase;
+  box-shadow: var(--shadow-strong);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.logout-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 30px rgba(47, 36, 31, 0.22);
+}
+
+@media (max-width: 640px) {
+  .profile-page {
+    padding: 20px 14px 110px;
+  }
+
+  h1 {
+    font-size: 30px;
+  }
+
+  .hero-card {
+    padding: 24px 18px;
+  }
+
+  .setting-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .language-row {
+    justify-content: flex-start;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}

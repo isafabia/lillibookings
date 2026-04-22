@@ -1,0 +1,59 @@
+<div class="page">
+  <div class="page-shell">
+
+    <div class="topbar">
+      <a class="back-btn" routerLink="/home">
+        <mat-icon>chevron_left</mat-icon>
+      </a>
+
+      <div class="topbar-copy">
+        <div class="eyebrow">admin</div>
+        <h1>payroll</h1>
+      </div>
+    </div>
+
+    <div class="summary-card" *ngIf="grandTotal$ | async as grandTotal">
+      <div class="summary-label">total payroll</div>
+      <div class="summary-value">{{ grandTotal | currency:'EUR':'symbol':'1.0-0' }}</div>
+      <div class="summary-sub">worked shifts only</div>
+    </div>
+
+    <ng-container *ngIf="payroll$ | async as payrollRows">
+
+      <div class="empty-state" *ngIf="payrollRows.length === 0">
+        no worked shifts yet
+      </div>
+
+      <div class="payroll-grid" *ngIf="payrollRows.length > 0">
+        <div class="payroll-card" *ngFor="let row of payrollRows">
+          <div class="card-top">
+            <div>
+              <div class="employee-name">{{ row.employeeName }}</div>
+              <div class="employee-sub">{{ row.workedShifts }} worked shifts</div>
+            </div>
+
+            <div class="rate-pill">€{{ row.dayRate }}/day</div>
+          </div>
+
+          <div class="card-divider"></div>
+
+          <div class="payroll-row">
+            <span>worked shifts</span>
+            <strong>{{ row.workedShifts }}</strong>
+          </div>
+
+          <div class="payroll-row">
+            <span>day rate</span>
+            <strong>€{{ row.dayRate }}</strong>
+          </div>
+
+          <div class="payroll-row total">
+            <span>total pay</span>
+            <strong>{{ row.totalPay | currency:'EUR':'symbol':'1.0-0' }}</strong>
+          </div>
+        </div>
+      </div>
+
+    </ng-container>
+  </div>
+</div>
