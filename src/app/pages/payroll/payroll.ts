@@ -1,49 +1,43 @@
 import { Component } from '@angular/core';
-import { AsyncPipe, CurrencyPipe, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { combineLatest, map, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 import { MatIconModule } from '@angular/material/icon';
 
 import { RotaApiService } from '../../services/rota-api.service';
-import { UsersApiService, AppUser } from '../../services/users-api.service';
 import { RotaShift } from '../../models/rota-shift.model';
 
 interface PayrollRow {
   employeeName: string;
-  workedShifts: number;
-  dayRate: number;
-  totalPay: number;
+  daysWorked: number;
+  fullDays: number;
+  birthdayParties: number;
 }
 
 @Component({
   selector: 'app-payroll',
   standalone: true,
-  imports: [NgIf, NgFor, AsyncPipe, RouterLink, MatIconModule, CurrencyPipe],
+  imports: [NgIf, NgFor, AsyncPipe, RouterLink, MatIconModule],
   templateUrl: './payroll.html',
   styleUrls: ['./payroll.scss']
 })
 export class PayrollComponent {
   payroll$!: Observable<PayrollRow[]>;
-  grandTotal$!: Observable<number>;
+  totalDaysWorked$!: Observable<number>;
 
-  constructor(
-    private rotaApi: RotaApiService,
-    private usersApi: UsersApiService
-  ) {
+  constructor(private rotaApi: RotaApiService) {
     this.loadPayroll();
   }
 
   private loadPayroll(): void {
-    this.payroll$ = combineLatest([
-      this.rotaApi.getAll(),
-      this.usersApi.getAll()
-    ]).pipe(
-      map(([shifts, users]: [RotaShift[], AppUser[]]) => {
+    this.payroll$ = this.rotaApi.getAll().pipe(
+      map((shifts: RotaShift[]) => {
         const today = new Date();
         const weekStart = this.getStartOfWeek(today);
         const weekEnd = this.getEndOfWeek(today);
 
+        // only count shifts marked as worked this week
         const workedThisWeek = shifts.filter((s: RotaShift) => {
           if (s.confirmedWorked !== true) return false;
 
@@ -57,31 +51,39 @@ export class PayrollComponent {
           const employeeName = shift.employeeName?.trim() || 'unknown';
           const key = employeeName.toLowerCase();
 
-          const matchedUser = users.find((u: AppUser) =>
-            u.name?.trim().toLowerCase() === key
-          );
-
-          const dayRate = Number(matchedUser?.dayRate ?? 0);
-
           if (!grouped[key]) {
             grouped[key] = {
               employeeName,
-              workedShifts: 0,
-              dayRate,
-              totalPay: 0
+              daysWorked: 0,
+              fullDays: 0,
+              birthdayParties: 0
             };
           }
 
-          grouped[key].workedShifts += 1;
-          grouped[key].totalPay = grouped[key].workedShifts * grouped[key].dayRate;
+          grouped[key].daysWorked += 1;
+
+          if (this.isBirthdayParty(shift.assignmentType)) {
+            grouped[key].birthdayParties += 1;
+          } else {
+            grouped[key].fullDays += 1;
+          }
         }
 
-        return Object.values(grouped).sort((a, b) => b.totalPay - a.totalPay);
+        return Object.values(grouped).sort((a, b) => b.daysWorked - a.daysWorked);
       })
     );
 
-    this.grandTotal$ = this.payroll$.pipe(
-      map((rows: PayrollRow[]) => rows.reduce((sum, row) => sum + row.totalPay, 0))
+    this.totalDaysWorked$ = this.payroll$.pipe(
+      map((rows: PayrollRow[]) => rows.reduce((sum, row) => sum + row.daysWorked, 0))
+    );
+  }
+
+  private isBirthdayParty(value: string | null | undefined): boolean {
+    const type = (value ?? '').trim().toLowerCase();
+
+    return (
+      type.includes('birthday') ||
+      type.includes('party')
     );
   }
 

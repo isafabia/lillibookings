@@ -49,6 +49,8 @@ export class EditBookingComponent {
   ) {
     this.form = this.fb.group({
       groupName: ['', [Validators.required, Validators.minLength(2)]],
+      location: ['', [Validators.required]],
+      schoolEmail: ['', [Validators.required, Validators.email]],
       date: [null as Date | null, [Validators.required]],
       startTime: ['', [Validators.required]],
       endTime: ['', [Validators.required]],
@@ -67,6 +69,7 @@ export class EditBookingComponent {
     }
 
     const navState = history.state as { booking?: Booking };
+
     if (navState?.booking?.id === this.bookingId) {
       this.patchForm(navState.booking);
       this.isLoading = false;
@@ -89,6 +92,8 @@ export class EditBookingComponent {
   private patchForm(booking: Booking): void {
     this.form.patchValue({
       groupName: booking.groupName,
+      location: booking.location ?? '',
+      schoolEmail: booking.schoolEmail ?? '',
       date: this.toDateForPicker(booking.date),
       startTime: booking.startTime,
       endTime: booking.endTime,
@@ -112,6 +117,8 @@ export class EditBookingComponent {
     const updated: Booking = {
       id: this.bookingId,
       groupName: String(v.groupName ?? '').trim(),
+      location: String(v.location ?? '').trim(),
+      schoolEmail: String(v.schoolEmail ?? '').trim().toLowerCase(),
       date: this.toLocalDateString(v.date),
       startTime: String(v.startTime ?? ''),
       endTime: String(v.endTime ?? ''),
@@ -150,7 +157,10 @@ export class EditBookingComponent {
       return value;
     }
 
-    const datePart = String(value).includes('T') ? String(value).split('T')[0] : String(value);
+    const datePart = String(value).includes('T')
+      ? String(value).split('T')[0]
+      : String(value);
+
     const [year, month, day] = datePart.split('-').map(Number);
 
     return new Date(year, month - 1, day);

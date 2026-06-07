@@ -46,7 +46,8 @@ export class RotaComponent {
   assignmentTypes: ShiftAssignmentType[] = [
     'residential-group',
     'activity-station',
-    'follow-day-group'
+    'follow-day-group',
+    'birthday-party'
   ];
 
   form: any;

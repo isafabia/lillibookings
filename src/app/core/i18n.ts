@@ -156,7 +156,15 @@ export const TRANSLATIONS: any = {
     employee_view: 'employee view',
     clear_all: 'clear all',
     clear_all_not_connected: 'clear all is not connected to backend yet',
-    group_size: 'group size'
+    group_size: 'group size',
+
+    earnings: 'earnings',
+    total_earned: 'total earned',
+    day_rate: 'day rate',
+    worked_shifts: 'worked shifts',
+    pay_logic: 'pay logic',
+
+    birthday_party: 'birthday party',
   },
 
   spanish: {
@@ -316,7 +324,15 @@ export const TRANSLATIONS: any = {
     employee_view: 'vista del empleado',
     clear_all: 'borrar todo',
     clear_all_not_connected: 'borrar todo no está conectado al backend todavía',
-    group_size: 'tamaño del grupo'
+    group_size: 'tamaño del grupo',
+
+    earnings: 'ganancias',
+    total_earned: 'total ganado',
+    day_rate: 'pago diario',
+    worked_shifts: 'turnos trabajados',
+    pay_logic: 'cálculo',
+
+    birthday_party: 'fiesta de cumpleaños',
   },
 
   swedish: {
@@ -476,6 +492,14 @@ export const TRANSLATIONS: any = {
     employee_view: 'anställdvy',
     clear_all: 'rensa allt',
     clear_all_not_connected: 'rensa allt är inte kopplat till backend ännu',
-    group_size: 'gruppstorlek'
+    group_size: 'gruppstorlek',
+
+    earnings: 'inkomster',
+    total_earned: 'totalt intjänat',
+    day_rate: 'daglön',
+    worked_shifts: 'arbetade pass',
+    pay_logic: 'beräkning',
+
+    birthday_party: 'fodelsedagskalas',
   }
 };

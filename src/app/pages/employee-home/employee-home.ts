@@ -33,7 +33,6 @@ import { TranslateService } from '../../services/translate.service';
 })
 export class EmployeeHomeComponent {
   currentEmployee = '';
-  currentDayRate = 0;
 
   hideBottomNav = false;
   private lastScrollY = 0;
@@ -42,7 +41,8 @@ export class EmployeeHomeComponent {
   pending$!: Observable<RotaShift[]>;
   upcoming$!: Observable<RotaShift | null>;
   workedShifts$!: Observable<RotaShift[]>;
-  totalEarned$!: Observable<number>;
+  fullDays$!: Observable<number>;
+  birthdayParties$!: Observable<number>;
 
   bookings: Booking[] = [];
 
@@ -57,7 +57,6 @@ export class EmployeeHomeComponent {
     if (savedUser) {
       const user = JSON.parse(savedUser);
       this.currentEmployee = user.name?.trim().toLowerCase() || '';
-      this.currentDayRate = Number(user.dayRate ?? 0);
     }
 
     this.shifts$ = this.rotaApi.getAll();
@@ -74,17 +73,14 @@ export class EmployeeHomeComponent {
   onScroll(): void {
     const current = window.scrollY || 0;
 
-    if (current > this.lastScrollY && current > 80) {
-      this.hideBottomNav = true;
-    } else {
-      this.hideBottomNav = false;
-    }
-
+    this.hideBottomNav = current > this.lastScrollY && current > 80;
     this.lastScrollY = current;
   }
 
   private setupStreams(): void {
     const today = this.stripTime(new Date());
+    const weekStart = this.getStartOfWeek(today);
+    const weekEnd = this.getEndOfWeek(today);
 
     this.pending$ = this.shifts$.pipe(
       map(items =>
@@ -114,16 +110,26 @@ export class EmployeeHomeComponent {
     this.workedShifts$ = this.shifts$.pipe(
       map(items =>
         items
-          .filter(s =>
-            s.employeeName?.trim().toLowerCase() === this.currentEmployee &&
-            s.confirmedWorked === true
-          )
+          .filter(s => {
+            const shiftDate = this.parseDate(s.date);
+
+            return (
+              s.employeeName?.trim().toLowerCase() === this.currentEmployee &&
+              s.confirmedWorked === true &&
+              shiftDate >= weekStart &&
+              shiftDate <= weekEnd
+            );
+          })
           .sort((a, b) => this.getShiftDateTime(b).getTime() - this.getShiftDateTime(a).getTime())
       )
     );
 
-    this.totalEarned$ = this.workedShifts$.pipe(
-      map(items => items.length * this.currentDayRate)
+    this.fullDays$ = this.workedShifts$.pipe(
+      map(items => items.filter(s => !this.isBirthdayParty(s.assignmentType)).length)
+    );
+
+    this.birthdayParties$ = this.workedShifts$.pipe(
+      map(items => items.filter(s => this.isBirthdayParty(s.assignmentType)).length)
     );
   }
 
@@ -136,6 +142,7 @@ export class EmployeeHomeComponent {
   }
 
   logout(): void {
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.removeItem('selectedBooking');
     this.router.navigate(['/login']);
@@ -165,6 +172,22 @@ export class EmployeeHomeComponent {
     }).toLowerCase();
   }
 
+  labelForType(type: string | null | undefined): string {
+    const value = (type ?? '').replace(/-/g, ' ');
+
+    if (!value.trim()) {
+      return 'shift';
+    }
+
+    return value;
+  }
+
+  private isBirthdayParty(value: string | null | undefined): boolean {
+    const type = (value ?? '').trim().toLowerCase();
+
+    return type.includes('birthday') || type.includes('party');
+  }
+
   private parseDate(value: string): Date {
     const datePart = value.split('T')[0];
     const [y, m, d] = datePart.split('-').map(Number);
@@ -188,5 +211,22 @@ export class EmployeeHomeComponent {
 
   private stripTime(d: Date): Date {
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
+  private getStartOfWeek(date: Date): Date {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = day === 0 ? -6 : 1 - day;
+    d.setDate(d.getDate() + diff);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  private getEndOfWeek(date: Date): Date {
+    const start = this.getStartOfWeek(date);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    end.setHours(23, 59, 59, 999);
+    return end;
   }
 }

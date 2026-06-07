@@ -1,0 +1,157 @@
+<div class="page">
+  <div class="page-shell">
+
+    <div class="topbar">
+      <a class="back-btn" routerLink="/profile">
+        <mat-icon>chevron_left</mat-icon>
+      </a>
+
+      <div class="topbar-copy">
+        <div class="eyebrow">admin</div>
+        <h1>invoice centre</h1>
+      </div>
+    </div>
+
+    <div class="create-card">
+      <div>
+        <div class="create-title">create invoice</div>
+        <div class="create-subtitle">choose a booking and fill the final invoice details</div>
+      </div>
+
+      <div class="create-row" *ngIf="bookings$ | async as bookings">
+        <select [(ngModel)]="selectedBookingId">
+          <option value="">select booking</option>
+          <option *ngFor="let booking of bookings" [value]="booking.id">
+            {{ booking.groupName }} • {{ booking.location }} • {{ booking.date | date:'mediumDate' }}
+          </option>
+        </select>
+
+        <button type="button" class="create-btn" (click)="createInvoiceFromSelected()">
+          <mat-icon>add</mat-icon>
+          create invoice
+        </button>
+      </div>
+    </div>
+
+    <div class="message error" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <ng-container *ngIf="latestInvoice$ | async as latest">
+      <div class="latest-card" *ngIf="latest">
+        <div class="latest-label">most recent invoice</div>
+
+        <div class="latest-main">
+          <div>
+            <div class="invoice-number">{{ latest.invoiceNumber }}</div>
+            <div class="school-name">{{ latest.schoolName }}</div>
+            <div class="school-meta">
+              {{ latest.location }} • {{ latest.dateVisited | date:'mediumDate' }}
+            </div>
+          </div>
+
+          <div class="status-pill" [class]="statusLabel(latest.status)">
+            {{ statusLabel(latest.status) }}
+          </div>
+        </div>
+
+        <div class="latest-total">
+          {{ latest.totalAmount | currency:'EUR':'symbol':'1.2-2' }}
+        </div>
+
+        <div class="invoice-actions">
+          <button type="button" class="action-btn pdf" (click)="openPdf(latest)">
+            <mat-icon>picture_as_pdf</mat-icon>
+            view pdf
+          </button>
+
+          <button type="button" class="action-btn email" (click)="sendInvoice(latest)">
+            <mat-icon>mail</mat-icon>
+            send invoice
+          </button>
+        </div>
+      </div>
+    </ng-container>
+
+    <div class="history-toggle" (click)="toggleHistory()">
+      <div>
+        <h2>invoice history</h2>
+        <p>
+          {{ showHistory ? 'hide all generated invoices' : 'click to view all generated invoices' }}
+        </p>
+      </div>
+
+      <mat-icon>
+        {{ showHistory ? 'expand_less' : 'expand_more' }}
+      </mat-icon>
+    </div>
+
+    <ng-container *ngIf="showHistory">
+      <ng-container *ngIf="invoices$ | async as invoices">
+
+        <div class="empty-state" *ngIf="invoices.length === 0">
+          no invoices created yet
+        </div>
+
+        <div class="invoice-grid" *ngIf="invoices.length > 0">
+          <div class="invoice-card" *ngFor="let invoice of invoices">
+
+            <div class="invoice-top">
+              <div>
+                <div class="invoice-number">{{ invoice.invoiceNumber }}</div>
+                <div class="school-name">{{ invoice.schoolName }}</div>
+                <div class="school-email">{{ invoice.schoolEmail }}</div>
+              </div>
+
+              <div class="status-pill" [class]="statusLabel(invoice.status)">
+                {{ statusLabel(invoice.status) }}
+              </div>
+            </div>
+
+            <div class="card-divider"></div>
+
+            <div class="invoice-row">
+              <span>location</span>
+              <strong>{{ invoice.location }}</strong>
+            </div>
+
+            <div class="invoice-row">
+              <span>date visited</span>
+              <strong>{{ invoice.dateVisited | date:'mediumDate' }}</strong>
+            </div>
+
+            <div class="invoice-row">
+              <span>kids arrived</span>
+              <strong>{{ invoice.actualKidsCount }}</strong>
+            </div>
+
+            <div class="invoice-row">
+              <span>teachers</span>
+              <strong>{{ invoice.teachersCount }}</strong>
+            </div>
+
+            <div class="invoice-row total">
+              <span>total</span>
+              <strong>{{ invoice.totalAmount | currency:'EUR':'symbol':'1.2-2' }}</strong>
+            </div>
+
+            <div class="invoice-actions">
+              <button type="button" class="action-btn pdf" (click)="openPdf(invoice)">
+                <mat-icon>picture_as_pdf</mat-icon>
+                view pdf
+              </button>
+
+              <button type="button" class="action-btn email" (click)="sendInvoice(invoice)">
+                <mat-icon>mail</mat-icon>
+                send invoice
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </ng-container>
+    </ng-container>
+
+  </div>
+</div>

@@ -1,7 +1,8 @@
 export type ShiftAssignmentType =
   | 'residential-group'
   | 'activity-station'
-  | 'follow-day-group';
+  | 'follow-day-group'
+  | 'birthday-party';
 
 export type ShiftStatus =
   | 'pending'

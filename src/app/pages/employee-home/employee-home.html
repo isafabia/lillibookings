@@ -25,39 +25,49 @@
 
   <div class="welcome">
     <h1>{{ translate.t('hey') }} {{ currentEmployee }} 👋</h1>
-    <div class="hint">{{ translate.t('employee_home_hint') }}</div>
+    <div class="hint">your shift offers and next confirmed shift</div>
   </div>
 
   <div class="section">
-    <div class="section-title">earnings</div>
+    <div class="section-title">your week so far</div>
 
     <mat-card class="soft-card earnings-card">
-      <div class="earnings-top">
-        <div class="earnings-icon">
-          <mat-icon>payments</mat-icon>
-        </div>
-
-        <div class="earnings-copy">
-          <div class="earnings-small">total earned</div>
-          <div class="earnings-big" *ngIf="totalEarned$ | async as total">€{{ total }}</div>
-        </div>
-      </div>
-
       <ng-container *ngIf="workedShifts$ | async as worked">
+        <div class="earnings-top">
+          <div class="earnings-icon">
+            <mat-icon>favorite</mat-icon>
+          </div>
+
+          <div class="earnings-copy">
+            <div class="earnings-small">thank you for showing up</div>
+            <div class="earnings-big">{{ worked.length }} days worked</div>
+          </div>
+        </div>
+
+        <div class="week-message">
+          every shift you work makes a difference here.
+        </div>
+
         <div class="earnings-grid">
           <div class="earnings-item">
-            <div class="earnings-label">day rate</div>
-            <div class="earnings-value">€{{ currentDayRate }}</div>
+            <div class="earnings-label">full days</div>
+            <div class="earnings-value" *ngIf="fullDays$ | async as fullDays">
+              {{ fullDays }}
+            </div>
           </div>
 
           <div class="earnings-item">
-            <div class="earnings-label">worked shifts</div>
-            <div class="earnings-value">{{ worked.length }}</div>
+            <div class="earnings-label">birthday parties</div>
+            <div class="earnings-value" *ngIf="birthdayParties$ | async as birthdayParties">
+              {{ birthdayParties }}
+            </div>
           </div>
 
           <div class="earnings-item">
-            <div class="earnings-label">pay logic</div>
-            <div class="earnings-value small">€{{ currentDayRate }} × {{ worked.length }}</div>
+            <div class="earnings-label">summary</div>
+            <div class="earnings-value small">
+              {{ worked.length }} worked this week
+            </div>
           </div>
         </div>
       </ng-container>
@@ -86,7 +96,7 @@
           </div>
 
           <div class="sub">
-            {{ formatShiftDate(s.date) }}
+            {{ formatShiftDate(s.date) }} • {{ labelForType(s.assignmentType) }}
           </div>
 
           <div class="sub" *ngIf="s.groupName">
@@ -154,7 +164,7 @@
           </div>
 
           <div class="sub">
-            {{ formatShiftDate(s.date) }}
+            {{ formatShiftDate(s.date) }} • {{ labelForType(s.assignmentType) }}
           </div>
 
           <div class="sub" *ngIf="s.groupName">

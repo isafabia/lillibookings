@@ -46,6 +46,8 @@ export class AddBookingComponent {
   ) {
     this.form = this.fb.group({
       groupName: ['', [Validators.required, Validators.minLength(2)]],
+      location: ['', [Validators.required]],
+      schoolEmail: ['', [Validators.required, Validators.email]],
       date: [null as Date | null, [Validators.required]],
       startTime: ['', [Validators.required]],
       endTime: ['', [Validators.required]],
@@ -67,6 +69,8 @@ export class AddBookingComponent {
 
     const booking: Booking = {
       groupName: String(v.groupName ?? '').trim(),
+      location: String(v.location ?? '').trim(),
+      schoolEmail: String(v.schoolEmail ?? '').trim().toLowerCase(),
       date: this.toLocalDateString(v.date),
       startTime: String(v.startTime ?? ''),
       endTime: String(v.endTime ?? ''),

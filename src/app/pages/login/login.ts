@@ -34,27 +34,33 @@ export class LoginComponent {
     }
 
     this.authApi.login(email, password).subscribe({
-      next: (user) => {
-        localStorage.setItem(
-          'user',
-          JSON.stringify({
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            dayRate: user.dayRate
-          })
-        );
+  next: (res) => {
 
-        if (user.role === 'admin') {
-          this.router.navigate(['/home']);
-        } else {
-          this.router.navigate(['/employee-home']);
-        }
-      },
-      error: () => {
-        this.errorMessage = 'invalid email or password';
-      }
-    });
+    // save token
+    localStorage.setItem('token', res.token);
+
+    // save user
+    localStorage.setItem(
+      'user',
+      JSON.stringify({
+        id: res.id,
+        name: res.name,
+        email: res.email,
+        role: res.role,
+        dayRate: res.dayRate
+      })
+    );
+
+    // redirect
+    if (res.role === 'admin') {
+      this.router.navigate(['/home']);
+    } else {
+      this.router.navigate(['/employee-home']);
+    }
+  },
+  error: () => {
+    this.errorMessage = 'invalid email or password';
+  }
+});
   }
 }

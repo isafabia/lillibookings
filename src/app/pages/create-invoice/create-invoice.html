@@ -1,0 +1,118 @@
+<div class="page">
+  <div class="page-shell">
+
+    <div class="topbar">
+      <a class="back-btn" routerLink="/invoices">
+        <mat-icon>chevron_left</mat-icon>
+      </a>
+
+      <div>
+        <div class="eyebrow">admin</div>
+        <h1>create invoice</h1>
+      </div>
+    </div>
+
+
+
+    <div class="message error" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <form class="invoice-form" [formGroup]="form" (ngSubmit)="submit()">
+
+      <div class="form-card">
+        <div class="card-title">school details</div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>school name</label>
+            <input formControlName="schoolName" />
+          </div>
+
+          <div class="field">
+            <label>school email</label>
+            <input type="email" formControlName="schoolEmail" />
+          </div>
+
+          <div class="field">
+            <label>location</label>
+            <input formControlName="location" />
+          </div>
+
+          <div class="field">
+            <label>date visited</label>
+            <input type="date" formControlName="dateVisited" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="card-title">attendance</div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>expected kids</label>
+            <input type="number" formControlName="expectedKidsCount" />
+          </div>
+
+          <div class="field">
+            <label>actual kids arrived</label>
+            <input type="number" formControlName="actualKidsCount" />
+          </div>
+
+          <div class="field">
+            <label>teachers / adults</label>
+            <input type="number" formControlName="teachersCount" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="card-title">pricing</div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>price per child (€)</label>
+            <input type="number" formControlName="pricePerChild" />
+          </div>
+
+          <div class="field">
+            <label>price per teacher (€)</label>
+            <input type="number" formControlName="pricePerTeacher" />
+          </div>
+
+          <div class="field">
+            <label>extra charges (€)</label>
+            <input type="number" formControlName="extraCharges" />
+          </div>
+
+          <div class="field">
+            <label>discount (€)</label>
+            <input type="number" formControlName="discount" />
+          </div>
+        </div>
+
+        <div class="total-card">
+          <span>invoice total</span>
+          <strong>€{{ calculateTotal() }}</strong>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="card-title">notes</div>
+
+        <div class="field full">
+          <label>invoice notes</label>
+          <textarea rows="4" formControlName="notes"></textarea>
+        </div>
+      </div>
+
+      <button class="submit-btn" type="submit">
+        <mat-icon>receipt_long</mat-icon>
+        create invoice
+      </button>
+
+    </form>
+
+  </div>
+</div>

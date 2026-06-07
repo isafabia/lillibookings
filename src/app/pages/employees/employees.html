@@ -1,0 +1,90 @@
+<div class="page">
+  <div class="page-shell">
+
+    <div class="topbar">
+      <a class="back-btn" routerLink="/home">
+        <mat-icon>chevron_left</mat-icon>
+      </a>
+
+      <div class="topbar-copy">
+        <div class="eyebrow">admin</div>
+        <h1>employees</h1>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="card-title">add employee</div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label>name</label>
+          <input [(ngModel)]="name" placeholder="enter name" />
+        </div>
+
+        <div class="field">
+          <label>email</label>
+          <input [(ngModel)]="email" placeholder="enter email" />
+        </div>
+
+        <div class="field">
+          <label>password</label>
+          <input type="password" [(ngModel)]="password" placeholder="enter password" />
+        </div>
+
+        <div class="field">
+          <label>role</label>
+          <select [(ngModel)]="role">
+            <option value="employee">employee</option>
+            <option value="admin">admin</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="create-btn" (click)="createUser()">
+        <mat-icon>person_add</mat-icon>
+        create employee
+      </button>
+
+      <div class="message error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <div class="message success" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+    </div>
+
+    <div class="section-head">
+      <h2>all employees</h2>
+    </div>
+
+    <ng-container *ngIf="users$ | async as users">
+      <div class="empty-state" *ngIf="users.length === 0">
+        no users found
+      </div>
+
+      <div class="users-grid" *ngIf="users.length > 0">
+        <div class="user-card" *ngFor="let user of users">
+          <div class="user-top">
+            <div>
+              <div class="user-name">{{ user.name }}</div>
+              <div class="user-email">{{ user.email }}</div>
+            </div>
+
+            <div class="role-pill" [class.admin]="user.role === 'admin'">
+              {{ user.role }}
+            </div>
+          </div>
+
+          <div class="card-divider"></div>
+
+          <div class="user-row">
+            <span>account type</span>
+            <strong>{{ user.role === 'admin' ? 'admin access' : 'staff access' }}</strong>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+  </div>
+</div>

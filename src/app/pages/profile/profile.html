@@ -43,30 +43,51 @@
         </div>
 
         <div class="language-row">
-          <button
-            class="chip-btn"
-            [class.active]="currentLanguage === 'english'"
-            (click)="setLanguage('english')"
-          >
+          <button class="chip-btn" [class.active]="currentLanguage === 'english'" (click)="setLanguage('english')">
             english
           </button>
 
-          <button
-            class="chip-btn"
-            [class.active]="currentLanguage === 'spanish'"
-            (click)="setLanguage('spanish')"
-          >
+          <button class="chip-btn" [class.active]="currentLanguage === 'spanish'" (click)="setLanguage('spanish')">
             spanish
           </button>
 
-          <button
-            class="chip-btn"
-            [class.active]="currentLanguage === 'swedish'"
-            (click)="setLanguage('swedish')"
-          >
+          <button class="chip-btn" [class.active]="currentLanguage === 'swedish'" (click)="setLanguage('swedish')">
             swedish
           </button>
         </div>
+      </div>
+
+      <div class="setting-card admin-card" *ngIf="isAdmin">
+        <div class="setting-copy">
+          <div class="setting-title">manage employees</div>
+          <div class="setting-subtitle">add and manage staff accounts</div>
+        </div>
+
+        <a class="action-btn ghost-btn" routerLink="/employees">
+          open
+        </a>
+      </div>
+
+      <div class="setting-card admin-card" *ngIf="isAdmin">
+        <div class="setting-copy">
+          <div class="setting-title">worked days</div>
+          <div class="setting-subtitle">view full days and birthday parties worked</div>
+        </div>
+
+        <a class="action-btn ghost-btn" routerLink="/payroll">
+          open
+        </a>
+      </div>
+
+      <div class="setting-card admin-card" *ngIf="isAdmin">
+        <div class="setting-copy">
+          <div class="setting-title">invoice centre</div>
+          <div class="setting-subtitle">view invoice history and manage school invoices</div>
+        </div>
+
+        <a class="action-btn ghost-btn" routerLink="/invoices">
+          open
+        </a>
       </div>
     </div>
 

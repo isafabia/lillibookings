@@ -10,6 +10,14 @@ export interface AppUser {
   dayRate: number;
 }
 
+export interface CreateUserRequest {
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+  dayRate: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -20,5 +28,9 @@ export class UsersApiService {
 
   getAll(): Observable<AppUser[]> {
     return this.http.get<AppUser[]>(this.apiUrl);
+  }
+
+  create(user: CreateUserRequest): Observable<AppUser> {
+    return this.http.post<AppUser>(this.apiUrl, user);
   }
 }

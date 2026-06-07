@@ -10,4 +10,6 @@ export interface Booking {
   status: 'confirmed' | 'pending' | 'cancelled';
   bookingType: 'day-group' | 'residential';
   nights?: number; // Only for residential bookings
+  location: string;
+  schoolEmail: string;
 }

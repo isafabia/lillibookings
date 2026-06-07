@@ -27,6 +27,16 @@
     </div>
 
     <div class="row">
+      <mat-icon>location_on</mat-icon>
+      <span>{{ booking.location }}</span>
+    </div>
+
+    <div class="row">
+      <mat-icon>email</mat-icon>
+      <span>{{ booking.schoolEmail }}</span>
+    </div>
+
+    <div class="row">
       <mat-icon>schedule</mat-icon>
       <span>{{ booking.startTime }} – {{ booking.endTime }}</span>
     </div>
@@ -63,6 +73,7 @@
         <mat-icon>warning</mat-icon>
         {{ translate.t('medical_notes') }}
       </div>
+
       <div class="notes-body">
         {{ booking.medicalNotes }}
       </div>
@@ -82,6 +93,16 @@
       >
         <mat-icon>edit</mat-icon>
         {{ translate.t('edit') }}
+      </a>
+
+      <a
+        mat-raised-button
+        color="primary"
+        *ngIf="booking"
+        [routerLink]="['/create-invoice', booking.id]"
+      >
+        <mat-icon>receipt_long</mat-icon>
+        create invoice
       </a>
 
       <button mat-raised-button color="warn" type="button" (click)="delete()">

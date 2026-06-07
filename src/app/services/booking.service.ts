@@ -8,6 +8,8 @@ export class BookingService {
     {
       id: crypto.randomUUID(),
       groupName: "st. anne’s school",
+      location: 'mullingar',
+      schoolEmail: 'office@stannes.ie',
       date: new Date().toISOString(),
       startTime: '11:00',
       endTime: '15:00',

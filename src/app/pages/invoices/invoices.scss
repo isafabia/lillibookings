@@ -1,0 +1,393 @@
+.page {
+  min-height: 100vh;
+  padding: 28px 20px 120px;
+  background:
+    radial-gradient(circle at top left, rgba(244, 124, 32, 0.12), transparent 34%),
+    var(--bg-main);
+  color: var(--text-main);
+}
+
+.page-shell {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.back-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  color: var(--text-main);
+  box-shadow: var(--shadow-soft);
+}
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+h1,
+h2 {
+  margin: 0;
+  text-transform: lowercase;
+}
+
+h1 {
+  font-size: 36px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+h2 {
+  font-size: 25px;
+  font-weight: 950;
+}
+
+.create-card,
+.latest-card,
+.invoice-card,
+.empty-state,
+.message {
+  border-radius: 28px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+}
+
+.create-card {
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.create-title {
+  font-size: 21px;
+  font-weight: 950;
+  text-transform: lowercase;
+}
+
+.create-subtitle {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--text-soft);
+  text-transform: lowercase;
+}
+
+.create-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.create-row select {
+  width: 100%;
+  min-height: 54px;
+  border: 1px solid var(--border-soft);
+  border-radius: 18px;
+  padding: 0 16px;
+  background: var(--bg-main);
+  color: var(--text-main);
+  font: inherit;
+  font-weight: 700;
+  outline: none;
+}
+
+.create-row select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(244, 124, 32, 0.12);
+}
+
+.create-btn {
+  min-height: 54px;
+  border: none;
+  border-radius: 18px;
+  padding: 0 24px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+  color: white;
+  font-weight: 950;
+  text-transform: lowercase;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  box-shadow: var(--shadow-strong);
+  white-space: nowrap;
+}
+
+.latest-card {
+  padding: 24px;
+  margin-bottom: 26px;
+}
+
+.latest-label {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 14px;
+}
+
+.latest-main,
+.invoice-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.invoice-number {
+  font-size: 18px;
+  font-weight: 950;
+  color: var(--text-main);
+}
+
+.school-name {
+  margin-top: 5px;
+  font-size: 15px;
+  font-weight: 850;
+  color: var(--text-main);
+  text-transform: lowercase;
+}
+
+.school-email,
+.school-meta {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-soft);
+  word-break: break-word;
+}
+
+.latest-total {
+  margin-top: 20px;
+  padding: 18px;
+  border-radius: 22px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 32px;
+  font-weight: 950;
+  text-align: right;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 82px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 950;
+  text-transform: lowercase;
+}
+
+.status-pill.sent {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-pill.failed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-pill.created,
+.status-pill.generated {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.section-head {
+  margin: 12px 0 16px;
+}
+
+.section-head p {
+  margin: 6px 0 0;
+  color: var(--text-soft);
+  font-size: 14px;
+  text-transform: lowercase;
+}
+
+.invoice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.invoice-card {
+  padding: 22px;
+}
+
+.card-divider {
+  height: 1px;
+  background: var(--border-soft);
+  margin: 16px 0;
+}
+
+.invoice-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.invoice-row:last-child {
+  border-bottom: none;
+}
+
+.invoice-row span {
+  color: var(--text-soft);
+  font-size: 13px;
+  font-weight: 750;
+  text-transform: lowercase;
+}
+
+.invoice-row strong {
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 900;
+  text-align: right;
+}
+
+.invoice-row.total {
+  margin-top: 8px;
+  padding: 14px;
+  border-radius: 18px;
+  background: var(--accent-soft);
+  border-bottom: none;
+}
+
+.invoice-row.total span,
+.invoice-row.total strong {
+  color: var(--accent-strong);
+}
+
+.invoice-row.total strong {
+  font-size: 20px;
+}
+
+.empty-state,
+.message {
+  padding: 18px;
+  color: var(--text-soft);
+  font-weight: 800;
+  text-transform: lowercase;
+  margin-bottom: 16px;
+}
+
+.message.error {
+  color: #991b1b;
+  background: #fee2e2;
+  border-color: #fecaca;
+}
+
+@media (max-width: 800px) {
+  .invoice-grid,
+  .create-row {
+    grid-template-columns: 1fr;
+  }
+
+  .create-btn {
+    width: 100%;
+    padding: 15px 18px;
+  }
+
+  .latest-main,
+  .invoice-top {
+    flex-direction: column;
+  }
+
+  .latest-total {
+    text-align: left;
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: 20px 14px 110px;
+  }
+
+  h1 {
+    font-size: 30px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  .create-card,
+  .latest-card,
+  .invoice-card {
+    padding: 18px;
+    border-radius: 24px;
+  }
+
+  .pdf-btn {
+  width: 100%;
+  margin-top: 14px;
+  min-height: 46px;
+  border: none;
+  border-radius: 16px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-weight: 950;
+  text-transform: lowercase;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.invoice-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.action-btn {
+  flex: 1;
+  border: none;
+  border-radius: 14px;
+  padding: 12px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  font-weight: 800;
+  text-transform: lowercase;
+}
+
+.action-btn.pdf {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.action-btn.email {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+}

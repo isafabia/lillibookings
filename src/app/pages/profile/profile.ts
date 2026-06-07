@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateService } from '../../services/translate.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [NgIf, RouterLink],
+  imports: [NgIf, RouterLink, MatIconModule],
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss'],
 })
@@ -24,6 +25,10 @@ export class ProfileComponent {
 
   get currentLanguage(): string {
     return this.translate.currentLang;
+  }
+
+  get isAdmin(): boolean {
+    return this.user?.role === 'admin';
   }
 
   private loadUser(): void {
@@ -52,9 +57,10 @@ export class ProfileComponent {
     this.translate.setLanguage(language);
   }
 
-  logout(): void {
-    localStorage.removeItem('user');
-    localStorage.removeItem('selectedBooking');
-    this.router.navigate(['/login']);
-  }
+ logout(): void {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  localStorage.removeItem('selectedBooking');
+  this.router.navigate(['/login']);
+}
 }
