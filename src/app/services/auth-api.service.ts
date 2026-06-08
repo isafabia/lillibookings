@@ -8,7 +8,7 @@ import { LoginResponse } from '../models/login-response.model';
   providedIn: 'root'
 })
 export class AuthApiService {
-  private apiUrl = 'http://localhost:5180/api/users';
+  private apiUrl = 'https://lillibookings-api.onrender.com/api/users';
 
   constructor(private http: HttpClient) {}
 

@@ -22,7 +22,7 @@ export interface CreateUserRequest {
   providedIn: 'root'
 })
 export class UsersApiService {
-  private apiUrl = 'http://localhost:5180/api/users';
+  private apiUrl = 'https://lillibookings-api.onrender.com/api/users';
 
   constructor(private http: HttpClient) {}
 

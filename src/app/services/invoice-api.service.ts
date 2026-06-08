@@ -60,7 +60,7 @@ export interface CreateInvoiceRequest {
   providedIn: 'root'
 })
 export class InvoiceApiService {
-  private apiUrl = 'http://localhost:5180/api/invoices';
+  private apiUrl = 'https://lillibookings-api.onrender.com/api/invoices';
 
   constructor(private http: HttpClient) {}
 

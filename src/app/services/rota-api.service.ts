@@ -21,7 +21,7 @@ export interface CreateRotaShiftRequest {
   providedIn: 'root'
 })
 export class RotaApiService {
-  private apiUrl = 'http://localhost:5180/api/rota';
+  private apiUrl = 'https://lillibookings-api.onrender.com/api/rota';
 
   constructor(private http: HttpClient) {}
 

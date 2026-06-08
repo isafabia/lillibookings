@@ -7,7 +7,7 @@ import { Booking } from '../models/booking.model';
   providedIn: 'root'
 })
 export class BookingApiService {
-  private apiUrl = 'http://localhost:5180/api/bookings';
+  private apiUrl = 'https://lillibookings-api.onrender.com/api/bookings';
 
   constructor(private http: HttpClient) {}
 
