@@ -38,6 +38,7 @@ export class InvoicesComponent {
   selectedBookingId = '';
   errorMessage = '';
   showHistory = false;
+  isSending = false;
 
   constructor() {
     this.loadInvoices();
@@ -54,7 +55,10 @@ export class InvoicesComponent {
     );
 
     this.latestInvoice$ = this.invoiceApi.getLatest().pipe(
-      catchError(() => of(null))
+      catchError((err: unknown) => {
+        console.error('error loading latest invoice', err);
+        return of(null);
+      })
     );
   }
 
@@ -94,19 +98,28 @@ export class InvoicesComponent {
   }
 
   sendInvoice(invoice: Invoice): void {
-    this.errorMessage = '';
+  this.errorMessage = '';
+  this.isSending = true;
 
-    this.invoiceApi.sendInvoice(invoice.id).subscribe({
-      next: () => {
-        alert('invoice sent successfully');
-        this.loadInvoices();
-      },
-      error: (err: unknown) => {
-        console.error('error sending invoice', err);
-        this.errorMessage = 'could not send invoice';
-      }
-    });
-  }
+  this.invoiceApi.sendInvoice(invoice.id).subscribe({
+    next: () => {
+      alert('invoice sent successfully');
+      this.isSending = false;
+      this.loadInvoices();
+    },
+    error: (err: any) => {
+      console.error('error sending invoice', err);
+
+      this.errorMessage =
+        err?.error?.error ||
+        err?.error?.message ||
+        'could not send invoice';
+
+      this.isSending = false;
+      this.loadInvoices();
+    }
+  });
+}
 
   toggleHistory(): void {
     this.showHistory = !this.showHistory;

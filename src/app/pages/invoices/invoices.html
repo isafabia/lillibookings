@@ -15,12 +15,15 @@
     <div class="create-card">
       <div>
         <div class="create-title">create invoice</div>
-        <div class="create-subtitle">choose a booking and fill the final invoice details</div>
+        <div class="create-subtitle">
+          choose a booking and fill the final invoice details
+        </div>
       </div>
 
       <div class="create-row" *ngIf="bookings$ | async as bookings">
         <select [(ngModel)]="selectedBookingId">
           <option value="">select booking</option>
+
           <option *ngFor="let booking of bookings" [value]="booking.id">
             {{ booking.groupName }} • {{ booking.location }} • {{ booking.date | date:'mediumDate' }}
           </option>
@@ -65,9 +68,14 @@
             view pdf
           </button>
 
-          <button type="button" class="action-btn email" (click)="sendInvoice(latest)">
+          <button
+            type="button"
+            class="action-btn email"
+            (click)="sendInvoice(latest)"
+            [disabled]="isSending"
+          >
             <mat-icon>mail</mat-icon>
-            send invoice
+            {{ isSending ? 'sending...' : 'send invoice' }}
           </button>
         </div>
       </div>
@@ -141,9 +149,14 @@
                 view pdf
               </button>
 
-              <button type="button" class="action-btn email" (click)="sendInvoice(invoice)">
+              <button
+                type="button"
+                class="action-btn email"
+                (click)="sendInvoice(invoice)"
+                [disabled]="isSending"
+              >
                 <mat-icon>mail</mat-icon>
-                send invoice
+                {{ isSending ? 'sending...' : 'send invoice' }}
               </button>
             </div>
 
