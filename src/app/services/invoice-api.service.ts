@@ -82,7 +82,5 @@ export class InvoiceApiService {
     });
   }
 
-  sendInvoice(invoiceId: string): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/${invoiceId}/send`, {});
-  }
+  
 }

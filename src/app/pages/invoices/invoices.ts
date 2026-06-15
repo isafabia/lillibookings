@@ -97,29 +97,7 @@ export class InvoicesComponent {
     });
   }
 
-  sendInvoice(invoice: Invoice): void {
-  this.errorMessage = '';
-  this.isSending = true;
 
-  this.invoiceApi.sendInvoice(invoice.id).subscribe({
-    next: () => {
-      alert('invoice sent successfully');
-      this.isSending = false;
-      this.loadInvoices();
-    },
-    error: (err: any) => {
-      console.error('error sending invoice', err);
-
-      this.errorMessage =
-        err?.error?.error ||
-        err?.error?.message ||
-        'could not send invoice';
-
-      this.isSending = false;
-      this.loadInvoices();
-    }
-  });
-}
 
   toggleHistory(): void {
     this.showHistory = !this.showHistory;

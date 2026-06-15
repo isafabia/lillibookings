@@ -67,16 +67,6 @@
             <mat-icon>picture_as_pdf</mat-icon>
             view pdf
           </button>
-
-          <button
-            type="button"
-            class="action-btn email"
-            (click)="sendInvoice(latest)"
-            [disabled]="isSending"
-          >
-            <mat-icon>mail</mat-icon>
-            {{ isSending ? 'sending...' : 'send invoice' }}
-          </button>
         </div>
       </div>
     </ng-container>
@@ -149,15 +139,6 @@
                 view pdf
               </button>
 
-              <button
-                type="button"
-                class="action-btn email"
-                (click)="sendInvoice(invoice)"
-                [disabled]="isSending"
-              >
-                <mat-icon>mail</mat-icon>
-                {{ isSending ? 'sending...' : 'send invoice' }}
-              </button>
             </div>
 
           </div>
