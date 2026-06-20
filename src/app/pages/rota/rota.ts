@@ -46,6 +46,10 @@ export class RotaComponent {
   saving = false;
   errorMessage = '';
 
+  showPending = true;
+  showAccepted = true;
+  showDeclined = false;
+
   assignmentTypes: ShiftAssignmentType[] = [
     'residential-group',
     'activity-station',
@@ -96,18 +100,14 @@ export class RotaComponent {
       next: (data) => {
         this.shifts = data;
       },
-      error: (err) => {
-        console.error('error loading shifts', err);
-      }
+      error: (err) => console.error('error loading shifts', err)
     });
 
     this.bookingApi.getBookings().subscribe({
       next: (data) => {
         this.bookings = data;
       },
-      error: (err) => {
-        console.error('error loading bookings', err);
-      }
+      error: (err) => console.error('error loading bookings', err)
     });
 
     this.usersApi.getAll().subscribe({
@@ -116,9 +116,7 @@ export class RotaComponent {
           .filter(u => u.role?.toLowerCase() === 'employee')
           .sort((a, b) => a.name.localeCompare(b.name));
       },
-      error: (err) => {
-        console.error('error loading employees', err);
-      }
+      error: (err) => console.error('error loading employees', err)
     });
   }
 
@@ -147,7 +145,7 @@ export class RotaComponent {
         const shift: CreateRotaShiftRequest = {
           employeeId: String(employeeId),
           employeeName: employee?.name ?? '',
-          date: date,
+          date,
           startTime: String(v.startTime ?? ''),
           endTime: String(v.endTime ?? ''),
           assignmentType: String(v.assignmentType ?? ''),
@@ -189,28 +187,35 @@ export class RotaComponent {
     });
   }
 
-  clearAllShifts(): void {
-    alert(this.translate.t('clear_all_not_connected'));
+  get weekShifts(): RotaShift[] {
+    const { start, end } = this.currentWeekRange();
+
+    return this.shifts.filter(shift => {
+      const d = this.shiftDateOnly(shift.date);
+      return d >= start && d <= end;
+    });
   }
 
   get pendingShifts(): RotaShift[] {
-    return this.shifts.filter(s => this.statusLabel(s.status) === 'pending');
+    return this.weekShifts.filter(s => this.statusLabel(s.status) === 'pending');
   }
 
   get acceptedShifts(): RotaShift[] {
-    return this.shifts.filter(s =>
-      this.statusLabel(s.status) === 'accepted' && !s.confirmedWorked
-    );
-  }
-
-  get workedShifts(): RotaShift[] {
-    return this.shifts.filter(s =>
-      s.confirmedWorked || this.statusLabel(s.status) === 'worked'
-    );
+    return this.weekShifts.filter(s => this.statusLabel(s.status) === 'accepted');
   }
 
   get declinedShifts(): RotaShift[] {
-    return this.shifts.filter(s => this.statusLabel(s.status) === 'declined');
+    return this.weekShifts.filter(s => this.statusLabel(s.status) === 'declined');
+  }
+
+  toggle(section: 'pending' | 'accepted' | 'declined'): void {
+    if (section === 'pending') this.showPending = !this.showPending;
+    if (section === 'accepted') this.showAccepted = !this.showAccepted;
+    if (section === 'declined') this.showDeclined = !this.showDeclined;
+  }
+
+  clearAllShifts(): void {
+    alert(this.translate.t('clear_all_not_connected'));
   }
 
   labelForType(type: string): string {
@@ -226,9 +231,40 @@ export class RotaComponent {
     return this.bookings.find(b => b.id === id);
   }
 
-  private todayString(): string {
+  private currentWeekRange(): { start: string; end: string } {
     const today = new Date();
-    return this.formatDate(today);
+    const day = today.getDay();
+
+    const diffToMonday = day === 0 ? -6 : 1 - day;
+
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + diffToMonday);
+
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+
+    return {
+      start: this.formatDate(monday),
+      end: this.formatDate(sunday)
+    };
+  }
+
+  private shiftDateOnly(value: string | Date): string {
+    if (value instanceof Date) {
+      return this.formatDate(value);
+    }
+
+    const text = String(value);
+
+    if (text.includes('T')) {
+      return text.split('T')[0];
+    }
+
+    return text.slice(0, 10);
+  }
+
+  private todayString(): string {
+    return this.formatDate(new Date());
   }
 
   private getDatesBetween(startDate: string, endDate: string): string[] {

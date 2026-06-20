@@ -94,83 +94,80 @@
         <button mat-stroked-button type="button" routerLink="/rota/employee">
           {{ translate.t('employee_view') }}
         </button>
-
-        <button mat-stroked-button type="button" (click)="clearAllShifts()">
-          {{ translate.t('clear_all') }}
-        </button>
       </div>
     </form>
   </mat-card>
 
   <mat-card class="soft-card">
-    <div class="section-title">rota shifts</div>
+    <div class="section-title">this week's rota responses</div>
 
     <div class="status-section">
-      <div class="status-heading pending">
-        pending response
-        <span>{{ pendingShifts.length }}</span>
-      </div>
+      <button type="button" class="status-heading pending" (click)="toggle('pending')">
+        <span>pending response</span>
 
-      <div class="empty-state" *ngIf="pendingShifts.length === 0">
-        no pending shifts
-      </div>
-
-      <div class="shift-list">
-        <div class="shift-card" *ngFor="let shift of pendingShifts">
-          <ng-container *ngTemplateOutlet="shiftTemplate; context: { shift: shift }"></ng-container>
+        <div class="heading-right">
+          <strong>{{ pendingShifts.length }}</strong>
+          <mat-icon>{{ showPending ? 'expand_less' : 'expand_more' }}</mat-icon>
         </div>
-      </div>
+      </button>
+
+      <ng-container *ngIf="showPending">
+        <div class="empty-state" *ngIf="pendingShifts.length === 0">
+          no pending shifts this week
+        </div>
+
+        <div class="shift-list">
+          <div class="shift-card" *ngFor="let shift of pendingShifts">
+            <ng-container *ngTemplateOutlet="shiftTemplate; context: { shift: shift }"></ng-container>
+          </div>
+        </div>
+      </ng-container>
     </div>
 
     <div class="status-section">
-      <div class="status-heading accepted">
-        accepted upcoming
-        <span>{{ acceptedShifts.length }}</span>
-      </div>
+      <button type="button" class="status-heading accepted" (click)="toggle('accepted')">
+        <span>accepted</span>
 
-      <div class="empty-state" *ngIf="acceptedShifts.length === 0">
-        no accepted shifts
-      </div>
-
-      <div class="shift-list">
-        <div class="shift-card" *ngFor="let shift of acceptedShifts">
-          <ng-container *ngTemplateOutlet="shiftTemplate; context: { shift: shift }"></ng-container>
+        <div class="heading-right">
+          <strong>{{ acceptedShifts.length }}</strong>
+          <mat-icon>{{ showAccepted ? 'expand_less' : 'expand_more' }}</mat-icon>
         </div>
-      </div>
+      </button>
+
+      <ng-container *ngIf="showAccepted">
+        <div class="empty-state" *ngIf="acceptedShifts.length === 0">
+          no accepted shifts this week
+        </div>
+
+        <div class="shift-list">
+          <div class="shift-card" *ngFor="let shift of acceptedShifts">
+            <ng-container *ngTemplateOutlet="shiftTemplate; context: { shift: shift }"></ng-container>
+          </div>
+        </div>
+      </ng-container>
     </div>
 
     <div class="status-section">
-      <div class="status-heading worked">
-        worked
-        <span>{{ workedShifts.length }}</span>
-      </div>
+      <button type="button" class="status-heading declined" (click)="toggle('declined')">
+        <span>declined</span>
 
-      <div class="empty-state" *ngIf="workedShifts.length === 0">
-        no worked shifts
-      </div>
-
-      <div class="shift-list">
-        <div class="shift-card" *ngFor="let shift of workedShifts">
-          <ng-container *ngTemplateOutlet="shiftTemplate; context: { shift: shift }"></ng-container>
+        <div class="heading-right">
+          <strong>{{ declinedShifts.length }}</strong>
+          <mat-icon>{{ showDeclined ? 'expand_less' : 'expand_more' }}</mat-icon>
         </div>
-      </div>
-    </div>
+      </button>
 
-    <div class="status-section">
-      <div class="status-heading declined">
-        declined
-        <span>{{ declinedShifts.length }}</span>
-      </div>
-
-      <div class="empty-state" *ngIf="declinedShifts.length === 0">
-        no declined shifts
-      </div>
-
-      <div class="shift-list">
-        <div class="shift-card" *ngFor="let shift of declinedShifts">
-          <ng-container *ngTemplateOutlet="shiftTemplate; context: { shift: shift }"></ng-container>
+      <ng-container *ngIf="showDeclined">
+        <div class="empty-state" *ngIf="declinedShifts.length === 0">
+          no declined shifts this week
         </div>
-      </div>
+
+        <div class="shift-list">
+          <div class="shift-card" *ngFor="let shift of declinedShifts">
+            <ng-container *ngTemplateOutlet="shiftTemplate; context: { shift: shift }"></ng-container>
+          </div>
+        </div>
+      </ng-container>
     </div>
   </mat-card>
 </div>
@@ -213,21 +210,6 @@
         <div>
           <strong>linked booking:</strong>
           {{ bk.groupName }}
-        </div>
-
-        <div>
-          <strong>booking type:</strong>
-          {{ bk.bookingType === 'residential' ? 'residential' : 'day group' }}
-        </div>
-
-        <div>
-          <strong>group size:</strong>
-          {{ bk.kidsCount }} kids • {{ bk.teachersCount }} teachers
-        </div>
-
-        <div *ngIf="bk.medicalNotes?.trim()?.length">
-          <strong>medical notes:</strong>
-          {{ bk.medicalNotes }}
         </div>
       </ng-container>
     </ng-container>
