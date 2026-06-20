@@ -7,7 +7,6 @@
   color: var(--text-main);
 }
 
-/* 🔙 TOPBAR */
 .topbar {
   display: flex;
   align-items: center;
@@ -42,7 +41,6 @@
   text-transform: lowercase;
 }
 
-/* CARDS */
 .soft-card {
   border-radius: 24px;
   padding: 22px;
@@ -51,7 +49,6 @@
   border: 1px solid var(--border-soft);
 }
 
-/* TITLES */
 .section-title {
   font-size: 1.2rem;
   font-weight: 800;
@@ -60,7 +57,6 @@
   color: var(--text-main);
 }
 
-/* FORM */
 .form {
   display: grid;
   gap: 18px;
@@ -76,7 +72,6 @@
   width: 100%;
 }
 
-/* BUTTONS */
 .actions-row {
   display: flex;
   gap: 12px;
@@ -91,7 +86,46 @@
   color: white !important;
 }
 
-/* SHIFT LIST */
+.primary:disabled {
+  opacity: 0.65;
+}
+
+.message.error {
+  background: rgba(255, 0, 0, 0.08);
+  border: 1px solid rgba(255, 0, 0, 0.18);
+  color: #b00020;
+  padding: 12px 14px;
+  border-radius: 16px;
+  text-transform: lowercase;
+}
+
+.status-section {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.status-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-transform: lowercase;
+  font-weight: 800;
+  font-size: 1rem;
+  padding: 10px 14px;
+  border-radius: 18px;
+  background: var(--bg-main);
+  border: 1px solid var(--border-soft);
+}
+
+.status-heading span {
+  font-size: 0.85rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+}
+
 .shift-list {
   display: grid;
   gap: 16px;
@@ -143,7 +177,26 @@
   color: var(--text-main);
 }
 
-/* INFO */
+.shift-status.pending {
+  background: #fff8dd;
+  color: #8a6500;
+}
+
+.shift-status.accepted {
+  background: #d4f8e8;
+  color: #1f7a5c;
+}
+
+.shift-status.declined {
+  background: #ffe0e0;
+  color: #a33;
+}
+
+.shift-status.worked {
+  background: #e0ecff;
+  color: #2b4ea2;
+}
+
 .shift-info {
   display: grid;
   gap: 6px;
@@ -152,7 +205,6 @@
   color: var(--text-main);
 }
 
-/* EMPTY */
 .empty-state {
   opacity: 0.8;
   padding: 10px 0;
@@ -160,51 +212,6 @@
   color: var(--text-soft);
 }
 
-/* LINKS */
-.pill-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 40px;
-  padding: 0 16px;
-  border-radius: 999px;
-  text-decoration: none;
-  border: 1px solid var(--border-soft);
-  color: var(--text-main);
-  background: var(--bg-card);
-}
-
-/* STATUS PILLS */
-.status-pill {
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: lowercase;
-  width: fit-content;
-}
-
-.status-pill.pending {
-  background: #eee;
-  color: #555;
-}
-
-.status-pill.accepted {
-  background: #d4f8e8;
-  color: #1f7a5c;
-}
-
-.status-pill.declined {
-  background: #ffe0e0;
-  color: #a33;
-}
-
-.status-pill.worked {
-  background: #e0ecff;
-  color: #2b4ea2;
-}
-
-/* MOBILE */
 @media (max-width: 700px) {
   .page {
     padding: 16px;
@@ -222,5 +229,9 @@
 
   .soft-card {
     padding: 18px;
+  }
+
+  .shift-top {
+    flex-direction: column;
   }
 }

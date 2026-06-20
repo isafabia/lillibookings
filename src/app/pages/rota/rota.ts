@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { AsyncPipe, DatePipe, NgFor, NgIf } from '@angular/common';
+import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -10,14 +11,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 
-import { Observable } from 'rxjs';
-
 import { RotaApiService, CreateRotaShiftRequest } from '../../services/rota-api.service';
 import { RotaShift, ShiftAssignmentType } from '../../models/rota-shift.model';
-
 import { BookingApiService } from '../../services/booking-api.service';
 import { Booking } from '../../models/booking.model';
 import { TranslateService } from '../../services/translate.service';
+import { UsersApiService, AppUser } from '../../services/users-api.service';
 
 @Component({
   selector: 'app-rota',
@@ -25,7 +24,7 @@ import { TranslateService } from '../../services/translate.service';
   imports: [
     NgFor,
     NgIf,
-    AsyncPipe,
+    NgClass,
     DatePipe,
     ReactiveFormsModule,
     RouterLink,
@@ -40,8 +39,12 @@ import { TranslateService } from '../../services/translate.service';
   styleUrls: ['./rota.scss'],
 })
 export class RotaComponent {
-  shifts$!: Observable<RotaShift[]>;
+  shifts: RotaShift[] = [];
   bookings: Booking[] = [];
+  employees: AppUser[] = [];
+
+  saving = false;
+  errorMessage = '';
 
   assignmentTypes: ShiftAssignmentType[] = [
     'residential-group',
@@ -56,9 +59,47 @@ export class RotaComponent {
     private fb: FormBuilder,
     private bookingApi: BookingApiService,
     private rotaApi: RotaApiService,
+    private usersApi: UsersApiService,
     public translate: TranslateService
   ) {
-    this.shifts$ = this.rotaApi.getAll();
+    const today = this.todayString();
+
+    this.form = this.fb.group({
+      employeeIds: [[], [Validators.required]],
+      startDate: [today, [Validators.required]],
+      endDate: [today, [Validators.required]],
+      startTime: ['09:00', [Validators.required]],
+      endTime: ['17:00', [Validators.required]],
+      assignmentType: ['activity-station', [Validators.required]],
+      groupName: [''],
+      activity: [''],
+      bookingId: [''],
+    });
+
+    this.loadData();
+
+    this.form.get('bookingId')?.valueChanges.subscribe((id: string) => {
+      const booking = this.bookings.find(b => b.id === id);
+
+      if (booking) {
+        this.form.patchValue({
+          groupName: booking.groupName,
+          startDate: String(booking.date).split('T')[0],
+          endDate: String(booking.date).split('T')[0],
+        });
+      }
+    });
+  }
+
+  loadData(): void {
+    this.rotaApi.getAll().subscribe({
+      next: (data) => {
+        this.shifts = data;
+      },
+      error: (err) => {
+        console.error('error loading shifts', err);
+      }
+    });
 
     this.bookingApi.getBookings().subscribe({
       next: (data) => {
@@ -69,85 +110,81 @@ export class RotaComponent {
       }
     });
 
-    this.form = this.fb.group({
-      employeeName: ['', [Validators.required]],
-      date: [this.todayString(), [Validators.required]],
-      startTime: ['09:00', [Validators.required]],
-      endTime: ['17:00', [Validators.required]],
-      assignmentType: ['activity-station', [Validators.required]],
-      groupName: [''],
-      activityName: [''],
-      bookingId: [''],
-    });
-
-    this.form.get('bookingId')?.valueChanges.subscribe((id: string) => {
-      const booking = this.bookings.find(b => b.id === id);
-
-      if (booking) {
-        this.form.patchValue({
-          groupName: booking.groupName,
-          date: String(booking.date).split('T')[0]
-        });
+    this.usersApi.getAll().subscribe({
+      next: (data) => {
+        this.employees = data
+          .filter(u => u.role?.toLowerCase() === 'employee')
+          .sort((a, b) => a.name.localeCompare(b.name));
+      },
+      error: (err) => {
+        console.error('error loading employees', err);
       }
     });
   }
 
-  addShift(): void {
+  addShifts(): void {
+    this.errorMessage = '';
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
     const v = this.form.value;
-    const selectedBooking = this.bookings.find(b => b.id === v.bookingId);
+    const dates = this.getDatesBetween(v.startDate, v.endDate);
 
-    const shift: CreateRotaShiftRequest = {
-      employeeId: String(v.employeeName ?? '')
-        .trim()
-        .toLowerCase()
-        .replaceAll(' ', '-'),
+    if (dates.length === 0) {
+      this.errorMessage = 'end date cannot be before start date';
+      return;
+    }
 
-      employeeName: String(v.employeeName ?? '').trim(),
+    const requests = [];
 
-      date: this.normalizeApiDate(v.date),
+    for (const employeeId of v.employeeIds) {
+      const employee = this.employees.find(e => e.id === employeeId);
 
-      startTime: String(v.startTime ?? ''),
-      endTime: String(v.endTime ?? ''),
+      for (const date of dates) {
+        const shift: CreateRotaShiftRequest = {
+          employeeId: String(employeeId),
+          employeeName: employee?.name ?? '',
+          date: date,
+          startTime: String(v.startTime ?? ''),
+          endTime: String(v.endTime ?? ''),
+          assignmentType: String(v.assignmentType ?? ''),
+          activity: String(v.activity ?? '').trim() || null,
+          groupName: String(v.groupName ?? '').trim() || null,
+          bookingId: v.bookingId ? String(v.bookingId) : null,
+          status: 'pending',
+          confirmedWorked: false,
+        };
 
-      assignmentType: String(v.assignmentType ?? ''),
+        requests.push(this.rotaApi.create(shift));
+      }
+    }
 
-      activity: v.activityName
-        ? String(v.activityName).trim()
-        : null,
+    if (requests.length === 0) {
+      this.errorMessage = 'please select at least one employee';
+      return;
+    }
 
-      groupName:
-        selectedBooking?.groupName ||
-        (v.groupName ? String(v.groupName).trim() : null),
+    this.saving = true;
 
-      bookingId: v.bookingId ? String(v.bookingId) : null,
-
-      status: 'pending',
-      confirmedWorked: false
-    };
-
-    this.rotaApi.create(shift).subscribe({
+    forkJoin(requests).subscribe({
       next: () => {
-        this.shifts$ = this.rotaApi.getAll();
+        this.saving = false;
+        this.loadData();
 
-        this.form.reset({
-          employeeName: '',
-          date: this.todayString(),
-          startTime: '09:00',
-          endTime: '17:00',
-          assignmentType: 'activity-station',
+        this.form.patchValue({
+          employeeIds: [],
           groupName: '',
-          activityName: '',
+          activity: '',
           bookingId: '',
         });
       },
       error: (err) => {
-        console.error('BACKEND ERROR:', err);
-        alert(this.translate.t('error_saving_shift_check_console'));
+        console.error('error saving shifts', err);
+        this.saving = false;
+        this.errorMessage = 'could not save shifts';
       }
     });
   }
@@ -156,8 +193,32 @@ export class RotaComponent {
     alert(this.translate.t('clear_all_not_connected'));
   }
 
-  labelForType(type: ShiftAssignmentType): string {
+  get pendingShifts(): RotaShift[] {
+    return this.shifts.filter(s => this.statusLabel(s.status) === 'pending');
+  }
+
+  get acceptedShifts(): RotaShift[] {
+    return this.shifts.filter(s =>
+      this.statusLabel(s.status) === 'accepted' && !s.confirmedWorked
+    );
+  }
+
+  get workedShifts(): RotaShift[] {
+    return this.shifts.filter(s =>
+      s.confirmedWorked || this.statusLabel(s.status) === 'worked'
+    );
+  }
+
+  get declinedShifts(): RotaShift[] {
+    return this.shifts.filter(s => this.statusLabel(s.status) === 'declined');
+  }
+
+  labelForType(type: string): string {
     return this.translate.t(type.replace(/-/g, '_'));
+  }
+
+  statusLabel(status: string): string {
+    return status?.trim().toLowerCase() || 'pending';
   }
 
   getBooking(id?: string): Booking | undefined {
@@ -170,25 +231,22 @@ export class RotaComponent {
     return this.formatDate(today);
   }
 
-  private normalizeApiDate(value: string | Date): string {
-    if (value instanceof Date) {
-      return this.formatDate(value);
+  private getDatesBetween(startDate: string, endDate: string): string[] {
+    const dates: string[] = [];
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (end < start) return [];
+
+    const current = new Date(start);
+
+    while (current <= end) {
+      dates.push(this.formatDate(current));
+      current.setDate(current.getDate() + 1);
     }
 
-    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-      return value;
-    }
-
-    if (value.includes('T')) {
-      return value.split('T')[0];
-    }
-
-    const parsed = new Date(value);
-    if (!isNaN(parsed.getTime())) {
-      return this.formatDate(parsed);
-    }
-
-    return value;
+    return dates;
   }
 
   private formatDate(d: Date): string {
