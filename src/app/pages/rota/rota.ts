@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { forkJoin } from 'rxjs';
@@ -24,7 +24,6 @@ import { UsersApiService, AppUser } from '../../services/users-api.service';
   imports: [
     NgFor,
     NgIf,
-    NgClass,
     DatePipe,
     ReactiveFormsModule,
     RouterLink,
@@ -45,10 +44,6 @@ export class RotaComponent {
 
   saving = false;
   errorMessage = '';
-
-  showPending = true;
-  showAccepted = true;
-  showDeclined = false;
 
   assignmentTypes: ShiftAssignmentType[] = [
     'residential-group',
@@ -208,10 +203,24 @@ export class RotaComponent {
     return this.weekShifts.filter(s => this.statusLabel(s.status) === 'declined');
   }
 
-  toggle(section: 'pending' | 'accepted' | 'declined'): void {
-    if (section === 'pending') this.showPending = !this.showPending;
-    if (section === 'accepted') this.showAccepted = !this.showAccepted;
-    if (section === 'declined') this.showDeclined = !this.showDeclined;
+  get pendingEmployees(): string[] {
+    return this.uniqueEmployeeNames(this.pendingShifts);
+  }
+
+  get acceptedEmployees(): string[] {
+    return this.uniqueEmployeeNames(this.acceptedShifts);
+  }
+
+  get declinedEmployees(): string[] {
+    return this.uniqueEmployeeNames(this.declinedShifts);
+  }
+
+  private uniqueEmployeeNames(shifts: RotaShift[]): string[] {
+    return [...new Set(
+      shifts
+        .map(s => s.employeeName?.trim())
+        .filter((name): name is string => !!name)
+    )].sort((a, b) => a.localeCompare(b));
   }
 
   clearAllShifts(): void {
@@ -234,7 +243,6 @@ export class RotaComponent {
   private currentWeekRange(): { start: string; end: string } {
     const today = new Date();
     const day = today.getDay();
-
     const diffToMonday = day === 0 ? -6 : 1 - day;
 
     const monday = new Date(today);
