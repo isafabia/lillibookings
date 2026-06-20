@@ -52,6 +52,46 @@
   color: white !important;
 }
 
+.primary:disabled {
+  opacity: 0.65;
+}
+
+.message.error {
+  background: rgba(255, 0, 0, 0.08);
+  border: 1px solid rgba(255, 0, 0, 0.18);
+  color: #b00020;
+  padding: 12px 14px;
+  border-radius: 16px;
+  text-transform: lowercase;
+}
+
+.status-section {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.status-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-transform: lowercase;
+  font-weight: 800;
+  font-size: 1rem;
+  padding: 10px 14px;
+  border-radius: 18px;
+  background: var(--bg-main);
+  border: 1px solid var(--border-soft);
+}
+
+.status-heading span {
+  font-size: 0.85rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+}
+
 .shift-list {
   display: grid;
   gap: 14px;
@@ -65,22 +105,70 @@
   box-shadow: var(--shadow-soft);
 }
 
+.shift-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
 .shift-name {
-  font-weight: 700;
+  font-weight: 800;
   font-size: 1rem;
   text-transform: lowercase;
   color: var(--text-main);
-  margin-bottom: 8px;
 }
 
-.shift-card div {
+.shift-date {
+  color: var(--text-soft);
+  text-transform: lowercase;
+  font-size: 0.9rem;
+}
+
+.shift-info {
+  display: grid;
+  gap: 5px;
+}
+
+.shift-info div {
   color: var(--text-soft);
   line-height: 1.35;
   text-transform: lowercase;
 }
 
-.shift-card strong {
+.shift-info strong {
   color: var(--text-main);
+}
+
+.status-pill {
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: lowercase;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-main);
+}
+
+.status-pill.pending {
+  background: #fff8dd;
+  color: #8a6500;
+}
+
+.status-pill.accepted {
+  background: #e9f8ed;
+  color: #1f7a3a;
+}
+
+.status-pill.declined {
+  background: #ffecec;
+  color: #b42318;
+}
+
+.status-pill.worked {
+  background: #eaf1ff;
+  color: #2357a5;
 }
 
 .empty-state {
@@ -102,5 +190,9 @@
   .actions-row {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .shift-top {
+    flex-direction: column;
   }
 }

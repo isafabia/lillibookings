@@ -1,11 +1,13 @@
 <div class="page">
+
   <mat-card class="soft-card">
-    <div class="section-title">{{ translate.t('create_rota_shift') }}</div>
+    <div class="section-title">create rota shifts</div>
 
     <form class="form" [formGroup]="form">
+
       <mat-form-field appearance="outline" class="field">
-        <mat-label>{{ translate.t('employee') }}</mat-label>
-        <mat-select formControlName="employeeId">
+        <mat-label>employees</mat-label>
+        <mat-select formControlName="employeeIds" multiple>
           <mat-option *ngFor="let e of employees" [value]="e.id">
             {{ e.name }}
           </mat-option>
@@ -14,33 +16,38 @@
 
       <div class="two-col">
         <mat-form-field appearance="outline" class="field">
-          <mat-label>{{ translate.t('date') }}</mat-label>
-          <input matInput type="date" formControlName="date" />
+          <mat-label>start date</mat-label>
+          <input matInput type="date" formControlName="startDate" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="field">
-          <mat-label>{{ translate.t('type') }}</mat-label>
-          <mat-select formControlName="type">
-            <mat-option value="activity">{{ translate.t('activity') }}</mat-option>
-            <mat-option value="group">{{ translate.t('group') }}</mat-option>
-          </mat-select>
+          <mat-label>end date</mat-label>
+          <input matInput type="date" formControlName="endDate" />
         </mat-form-field>
       </div>
 
       <div class="two-col">
         <mat-form-field appearance="outline" class="field">
-          <mat-label>{{ translate.t('start_time') }}</mat-label>
+          <mat-label>start time</mat-label>
           <input matInput type="time" formControlName="startTime" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="field">
-          <mat-label>{{ translate.t('end_time') }}</mat-label>
+          <mat-label>end time</mat-label>
           <input matInput type="time" formControlName="endTime" />
         </mat-form-field>
       </div>
 
       <mat-form-field appearance="outline" class="field">
-        <mat-label>{{ translate.t('activity') }}</mat-label>
+        <mat-label>type</mat-label>
+        <mat-select formControlName="type">
+          <mat-option value="activity">activity station</mat-option>
+          <mat-option value="group">follow day group</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>activity</mat-label>
         <mat-select formControlName="activity">
           <mat-option *ngFor="let a of activities" [value]="a">
             {{ a }}
@@ -49,47 +56,150 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="field">
-        <mat-label>{{ translate.t('group_name') }}</mat-label>
-        <input matInput formControlName="groupName" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="field">
-        <mat-label>{{ translate.t('linked_booking') }}</mat-label>
-        <mat-select formControlName="bookingId">
-          <mat-option value="">{{ translate.t('none') }}</mat-option>
+        <mat-label>linked booking</mat-label>
+        <mat-select formControlName="bookingId" (selectionChange)="onBookingSelected($event.value)">
+          <mat-option value="">none</mat-option>
           <mat-option *ngFor="let b of bookings" [value]="b.id">
-            {{ b.groupName }}
+            {{ b.groupName }} • {{ b.date | date:'mediumDate' }}
           </mat-option>
         </mat-select>
       </mat-form-field>
 
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>group name</mat-label>
+        <input matInput formControlName="groupName" />
+      </mat-form-field>
+
+      <div class="message error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
       <div class="actions-row">
-        <button mat-raised-button type="button" class="primary" (click)="saveShift()">
+        <button
+          mat-raised-button
+          type="button"
+          class="primary"
+          (click)="saveShifts()"
+          [disabled]="saving"
+        >
           <mat-icon>add</mat-icon>
-          {{ translate.t('add_shift') }}
+          {{ saving ? 'creating shifts...' : 'create shifts' }}
         </button>
       </div>
+
     </form>
   </mat-card>
 
   <mat-card class="soft-card">
-    <div class="section-title">{{ translate.t('recent_shifts') }}</div>
+    <div class="section-title">rota shifts</div>
 
-    <div *ngIf="shifts$ | async as shifts">
-      <div class="empty-state" *ngIf="shifts.length === 0">
-        {{ translate.t('no_shifts_added_yet') }}
+    <div class="status-section">
+      <div class="status-heading pending">
+        pending response
+        <span>{{ pendingShifts.length }}</span>
+      </div>
+
+      <div class="empty-state" *ngIf="pendingShifts.length === 0">
+        no pending shifts
       </div>
 
       <div class="shift-list">
-        <div class="shift-card" *ngFor="let shift of shifts">
-          <div class="shift-name">{{ shift.employeeName }}</div>
-          <div><strong>{{ translate.t('date') }}:</strong> {{ shift.date }}</div>
-          <div><strong>{{ translate.t('time') }}:</strong> {{ shift.startTime }} - {{ shift.endTime }}</div>
-          <div *ngIf="shift.groupName"><strong>{{ translate.t('group') }}:</strong> {{ shift.groupName }}</div>
-          <div *ngIf="shift.bookingId"><strong>{{ translate.t('linked_booking_id') }}:</strong> {{ shift.bookingId }}</div>
-          <div><strong>{{ translate.t('status') }}:</strong> {{ translate.t(shift.status) }}</div>
+        <div class="shift-card" *ngFor="let shift of pendingShifts">
+          <ng-container *ngTemplateOutlet="shiftTemplate; context: { shift: shift }"></ng-container>
+        </div>
+      </div>
+    </div>
+
+    <div class="status-section">
+      <div class="status-heading accepted">
+        accepted upcoming
+        <span>{{ acceptedShifts.length }}</span>
+      </div>
+
+      <div class="empty-state" *ngIf="acceptedShifts.length === 0">
+        no accepted shifts
+      </div>
+
+      <div class="shift-list">
+        <div class="shift-card" *ngFor="let shift of acceptedShifts">
+          <ng-container *ngTemplateOutlet="shiftTemplate; context: { shift: shift }"></ng-container>
+        </div>
+      </div>
+    </div>
+
+    <div class="status-section">
+      <div class="status-heading worked">
+        worked
+        <span>{{ workedShifts.length }}</span>
+      </div>
+
+      <div class="empty-state" *ngIf="workedShifts.length === 0">
+        no worked shifts
+      </div>
+
+      <div class="shift-list">
+        <div class="shift-card" *ngFor="let shift of workedShifts">
+          <ng-container *ngTemplateOutlet="shiftTemplate; context: { shift: shift }"></ng-container>
+        </div>
+      </div>
+    </div>
+
+    <div class="status-section">
+      <div class="status-heading declined">
+        declined
+        <span>{{ declinedShifts.length }}</span>
+      </div>
+
+      <div class="empty-state" *ngIf="declinedShifts.length === 0">
+        no declined shifts
+      </div>
+
+      <div class="shift-list">
+        <div class="shift-card" *ngFor="let shift of declinedShifts">
+          <ng-container *ngTemplateOutlet="shiftTemplate; context: { shift: shift }"></ng-container>
         </div>
       </div>
     </div>
   </mat-card>
+
 </div>
+
+<ng-template #shiftTemplate let-shift="shift">
+  <div class="shift-top">
+    <div>
+      <div class="shift-name">{{ shift.employeeName }}</div>
+      <div class="shift-date">{{ shift.date | date:'mediumDate' }}</div>
+    </div>
+
+    <div class="status-pill" [ngClass]="statusLabel(shift.status)">
+      {{ statusLabel(shift.status) }}
+    </div>
+  </div>
+
+  <div class="shift-info">
+    <div>
+      <strong>time:</strong>
+      {{ shift.startTime }} - {{ shift.endTime }}
+    </div>
+
+    <div>
+      <strong>assignment:</strong>
+      {{ shift.assignmentType }}
+    </div>
+
+    <div *ngIf="shift.activity">
+      <strong>activity:</strong>
+      {{ shift.activity }}
+    </div>
+
+    <div *ngIf="shift.groupName">
+      <strong>group:</strong>
+      {{ shift.groupName }}
+    </div>
+
+    <div *ngIf="shift.bookingId">
+      <strong>booking:</strong>
+      linked
+    </div>
+  </div>
+</ng-template>
