@@ -45,6 +45,8 @@ export class RotaEmployeeComponent {
   currentEmployee = '';
   bookings: Booking[] = [];
 
+  updatingShiftId = '';
+
   constructor(
     private rotaApi: RotaApiService,
     private bookingApi: BookingApiService,
@@ -69,10 +71,48 @@ export class RotaEmployeeComponent {
     this.loadWeekRota();
   }
 
+  acceptShift(s: RotaShift): void {
+    this.updatingShiftId = s.id;
+
+    this.rotaApi.updateStatus(s.id, 'accepted').subscribe({
+      next: () => {
+        this.updatingShiftId = '';
+        this.loadWeekRota();
+      },
+      error: (err) => {
+        console.error('error accepting shift', err);
+        this.updatingShiftId = '';
+      }
+    });
+  }
+
+  declineShift(s: RotaShift): void {
+    this.updatingShiftId = s.id;
+
+    this.rotaApi.updateStatus(s.id, 'declined').subscribe({
+      next: () => {
+        this.updatingShiftId = '';
+        this.loadWeekRota();
+      },
+      error: (err) => {
+        console.error('error declining shift', err);
+        this.updatingShiftId = '';
+      }
+    });
+  }
+
   markWorked(s: RotaShift): void {
+    this.updatingShiftId = s.id;
+
     this.rotaApi.updateStatus(s.id, 'worked').subscribe({
-      next: () => this.loadWeekRota(),
-      error: (err) => console.error('error updating shift', err)
+      next: () => {
+        this.updatingShiftId = '';
+        this.loadWeekRota();
+      },
+      error: (err) => {
+        console.error('error updating shift', err);
+        this.updatingShiftId = '';
+      }
     });
   }
 
@@ -104,6 +144,7 @@ export class RotaEmployeeComponent {
         const locale = this.getCurrentLocale();
 
         const weekDays: Date[] = [];
+
         for (let i = 0; i < 7; i++) {
           const d = new Date(today);
           d.setDate(today.getDate() + i);
@@ -115,14 +156,23 @@ export class RotaEmployeeComponent {
 
         const employeeShifts = items
           .filter(s => s.employeeName?.trim().toLowerCase() === this.currentEmployee)
-          .filter(s => s.status === 'pending' || s.status === 'accepted' || s.status === 'worked')
+          .filter(s =>
+            s.status === 'pending' ||
+            s.status === 'accepted' ||
+            s.status === 'worked'
+          )
           .filter(s => {
             const shiftDate = this.parseDate(s.date);
-            return shiftDate.getTime() >= today.getTime() && shiftDate.getTime() <= lastDay.getTime();
+            return shiftDate.getTime() >= today.getTime() &&
+              shiftDate.getTime() <= lastDay.getTime();
           })
           .sort((a, b) => {
-            const dateCompare = this.parseDate(a.date).getTime() - this.parseDate(b.date).getTime();
+            const dateCompare =
+              this.parseDate(a.date).getTime() -
+              this.parseDate(b.date).getTime();
+
             if (dateCompare !== 0) return dateCompare;
+
             return a.startTime.localeCompare(b.startTime);
           });
 
@@ -147,6 +197,7 @@ export class RotaEmployeeComponent {
 
     const datePart = value.includes('T') ? value.split('T')[0] : value;
     const [y, m, d] = datePart.split('-').map(Number);
+
     return new Date(y, m - 1, d);
   }
 

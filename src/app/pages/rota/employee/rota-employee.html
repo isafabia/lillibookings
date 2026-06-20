@@ -40,7 +40,7 @@
 
             <div class="sub">
               {{ getAssignmentTypeLabel(s.assignmentType) }}
-              <span *ngIf="s.activity || s.activityName"> • {{ s.activity || s.activityName }}</span>
+              <span *ngIf="s.activity"> • {{ s.activity }}</span>
             </div>
 
             <div class="sub" *ngIf="s.groupName">
@@ -77,12 +77,35 @@
               {{ translate.t(s.status) }}
             </div>
 
+            <div class="actions" *ngIf="s.status === 'pending'">
+              <button
+                mat-raised-button
+                type="button"
+                class="accept-btn"
+                (click)="acceptShift(s)"
+                [disabled]="updatingShiftId === s.id"
+              >
+                accept
+              </button>
+
+              <button
+                mat-stroked-button
+                type="button"
+                class="decline-btn"
+                (click)="declineShift(s)"
+                [disabled]="updatingShiftId === s.id"
+              >
+                decline
+              </button>
+            </div>
+
             <div class="actions" *ngIf="s.status === 'accepted'">
               <button
                 mat-raised-button
                 type="button"
                 class="worked-btn"
                 (click)="markWorked(s)"
+                [disabled]="updatingShiftId === s.id"
               >
                 {{ translate.t('mark_worked') }}
               </button>
