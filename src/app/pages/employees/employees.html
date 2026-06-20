@@ -82,6 +82,16 @@
             <span>account type</span>
             <strong>{{ user.role === 'admin' ? 'admin access' : 'staff access' }}</strong>
           </div>
+
+          <button
+            type="button"
+            class="delete-btn"
+            (click)="deleteUser(user)"
+            [disabled]="deletingUserId === user.id"
+          >
+            <mat-icon>delete</mat-icon>
+            {{ deletingUserId === user.id ? 'deleting...' : 'delete employee' }}
+          </button>
         </div>
       </div>
     </ng-container>

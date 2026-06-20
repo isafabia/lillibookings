@@ -25,6 +25,7 @@ export class EmployeesComponent {
 
   errorMessage = '';
   successMessage = '';
+  deletingUserId = '';
 
   constructor(private usersApi: UsersApiService) {
     this.loadUsers();
@@ -61,7 +62,37 @@ export class EmployeesComponent {
         this.loadUsers();
       },
       error: (err) => {
-        this.errorMessage = err?.error || 'could not create user';
+        this.errorMessage =
+          err?.error?.message ||
+          err?.error ||
+          'could not create user';
+      }
+    });
+  }
+
+  deleteUser(user: AppUser): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    const confirmed = confirm(`are you sure you want to delete ${user.name}?`);
+
+    if (!confirmed) return;
+
+    this.deletingUserId = user.id;
+
+    this.usersApi.delete(user.id).subscribe({
+      next: () => {
+        this.successMessage = 'employee deleted successfully';
+        this.deletingUserId = '';
+        this.loadUsers();
+      },
+      error: (err) => {
+        console.error('error deleting user', err);
+        this.errorMessage =
+          err?.error?.message ||
+          err?.error ||
+          'could not delete employee';
+        this.deletingUserId = '';
       }
     });
   }
