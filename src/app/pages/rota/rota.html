@@ -103,15 +103,15 @@
 
     <div class="response-box">
       <div class="response-heading">
-        pending response <span>{{ pendingEmployees.length }}</span>
+        pending response <span>{{ weeklyResponses.pending.length }}</span>
       </div>
 
-      <div class="empty-state" *ngIf="pendingEmployees.length === 0">
+      <div class="empty-state" *ngIf="weeklyResponses.pending.length === 0">
         no pending shifts
       </div>
 
-      <div class="name-list" *ngIf="pendingEmployees.length > 0">
-        <div class="name-row" *ngFor="let name of pendingEmployees">
+      <div class="name-list" *ngIf="weeklyResponses.pending.length > 0">
+        <div class="name-row" *ngFor="let name of weeklyResponses.pending">
           {{ name }}
         </div>
       </div>
@@ -119,15 +119,15 @@
 
     <div class="response-box">
       <div class="response-heading">
-        accepted <span>{{ acceptedEmployees.length }}</span>
+        accepted <span>{{ weeklyResponses.accepted.length }}</span>
       </div>
 
-      <div class="empty-state" *ngIf="acceptedEmployees.length === 0">
+      <div class="empty-state" *ngIf="weeklyResponses.accepted.length === 0">
         no accepted shifts
       </div>
 
-      <div class="name-list" *ngIf="acceptedEmployees.length > 0">
-        <div class="name-row" *ngFor="let name of acceptedEmployees">
+      <div class="name-list" *ngIf="weeklyResponses.accepted.length > 0">
+        <div class="name-row" *ngFor="let name of weeklyResponses.accepted">
           {{ name }}
         </div>
       </div>
@@ -135,15 +135,15 @@
 
     <div class="response-box">
       <div class="response-heading">
-        declined <span>{{ declinedEmployees.length }}</span>
+        declined <span>{{ weeklyResponses.declined.length }}</span>
       </div>
 
-      <div class="empty-state" *ngIf="declinedEmployees.length === 0">
+      <div class="empty-state" *ngIf="weeklyResponses.declined.length === 0">
         no declined shifts
       </div>
 
-      <div class="name-list" *ngIf="declinedEmployees.length > 0">
-        <div class="name-row" *ngFor="let name of declinedEmployees">
+      <div class="name-list" *ngIf="weeklyResponses.declined.length > 0">
+        <div class="name-row" *ngFor="let name of weeklyResponses.declined">
           {{ name }}
         </div>
       </div>

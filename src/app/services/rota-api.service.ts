@@ -17,6 +17,12 @@ export interface CreateRotaShiftRequest {
   confirmedWorked: boolean;
 }
 
+export interface WeeklyResponses {
+  pending: string[];
+  accepted: string[];
+  declined: string[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -27,6 +33,10 @@ export class RotaApiService {
 
   getAll(): Observable<RotaShift[]> {
     return this.http.get<RotaShift[]>(this.apiUrl);
+  }
+
+  getWeeklyResponses(): Observable<WeeklyResponses> {
+    return this.http.get<WeeklyResponses>(`${this.apiUrl}/weekly-responses`);
   }
 
   create(shift: CreateRotaShiftRequest): Observable<RotaShift> {

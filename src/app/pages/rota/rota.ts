@@ -11,8 +11,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 
-import { RotaApiService, CreateRotaShiftRequest } from '../../services/rota-api.service';
-import { RotaShift, ShiftAssignmentType } from '../../models/rota-shift.model';
+import {
+  RotaApiService,
+  CreateRotaShiftRequest,
+  WeeklyResponses
+} from '../../services/rota-api.service';
+
+import { ShiftAssignmentType } from '../../models/rota-shift.model';
 import { BookingApiService } from '../../services/booking-api.service';
 import { Booking } from '../../models/booking.model';
 import { TranslateService } from '../../services/translate.service';
@@ -38,9 +43,14 @@ import { UsersApiService, AppUser } from '../../services/users-api.service';
   styleUrls: ['./rota.scss'],
 })
 export class RotaComponent {
-  shifts: RotaShift[] = [];
   bookings: Booking[] = [];
   employees: AppUser[] = [];
+
+  weeklyResponses: WeeklyResponses = {
+    pending: [],
+    accepted: [],
+    declined: []
+  };
 
   saving = false;
   errorMessage = '';
@@ -91,12 +101,7 @@ export class RotaComponent {
   }
 
   loadData(): void {
-    this.rotaApi.getAll().subscribe({
-      next: (data) => {
-        this.shifts = data;
-      },
-      error: (err) => console.error('error loading shifts', err)
-    });
+    this.loadWeeklyResponses();
 
     this.bookingApi.getBookings().subscribe({
       next: (data) => {
@@ -112,6 +117,15 @@ export class RotaComponent {
           .sort((a, b) => a.name.localeCompare(b.name));
       },
       error: (err) => console.error('error loading employees', err)
+    });
+  }
+
+  loadWeeklyResponses(): void {
+    this.rotaApi.getWeeklyResponses().subscribe({
+      next: (data) => {
+        this.weeklyResponses = data;
+      },
+      error: (err) => console.error('error loading weekly responses', err)
     });
   }
 
@@ -165,7 +179,6 @@ export class RotaComponent {
     forkJoin(requests).subscribe({
       next: () => {
         this.saving = false;
-        this.loadData();
 
         this.form.patchValue({
           employeeIds: [],
@@ -173,6 +186,8 @@ export class RotaComponent {
           activity: '',
           bookingId: '',
         });
+
+        this.loadWeeklyResponses();
       },
       error: (err) => {
         console.error('error saving shifts', err);
@@ -182,93 +197,13 @@ export class RotaComponent {
     });
   }
 
-  get weekShifts(): RotaShift[] {
-    const { start, end } = this.currentWeekRange();
-
-    return this.shifts.filter(shift => {
-      const d = this.shiftDateOnly(shift.date);
-      return d >= start && d <= end;
-    });
-  }
-
-  get pendingShifts(): RotaShift[] {
-    return this.weekShifts.filter(s => this.statusLabel(s.status) === 'pending');
-  }
-
-  get acceptedShifts(): RotaShift[] {
-    return this.weekShifts.filter(s => this.statusLabel(s.status) === 'accepted');
-  }
-
-  get declinedShifts(): RotaShift[] {
-    return this.weekShifts.filter(s => this.statusLabel(s.status) === 'declined');
-  }
-
-  get pendingEmployees(): string[] {
-    return this.uniqueEmployeeNames(this.pendingShifts);
-  }
-
-  get acceptedEmployees(): string[] {
-    return this.uniqueEmployeeNames(this.acceptedShifts);
-  }
-
-  get declinedEmployees(): string[] {
-    return this.uniqueEmployeeNames(this.declinedShifts);
-  }
-
-  private uniqueEmployeeNames(shifts: RotaShift[]): string[] {
-    return [...new Set(
-      shifts
-        .map(s => s.employeeName?.trim())
-        .filter((name): name is string => !!name)
-    )].sort((a, b) => a.localeCompare(b));
-  }
-
-  clearAllShifts(): void {
-    alert(this.translate.t('clear_all_not_connected'));
-  }
-
   labelForType(type: string): string {
     return this.translate.t(type.replace(/-/g, '_'));
-  }
-
-  statusLabel(status: string): string {
-    return status?.trim().toLowerCase() || 'pending';
   }
 
   getBooking(id?: string): Booking | undefined {
     if (!id) return undefined;
     return this.bookings.find(b => b.id === id);
-  }
-
-  private currentWeekRange(): { start: string; end: string } {
-    const today = new Date();
-    const day = today.getDay();
-    const diffToMonday = day === 0 ? -6 : 1 - day;
-
-    const monday = new Date(today);
-    monday.setDate(today.getDate() + diffToMonday);
-
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-
-    return {
-      start: this.formatDate(monday),
-      end: this.formatDate(sunday)
-    };
-  }
-
-  private shiftDateOnly(value: string | Date): string {
-    if (value instanceof Date) {
-      return this.formatDate(value);
-    }
-
-    const text = String(value);
-
-    if (text.includes('T')) {
-      return text.split('T')[0];
-    }
-
-    return text.slice(0, 10);
   }
 
   private todayString(): string {
